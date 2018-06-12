@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFiManager.hpp>
 #include <Multicast.hpp>
+#include <QSYPacket.h>
 
 WiFiManager wifiManager;
 Multicast multicast(16);

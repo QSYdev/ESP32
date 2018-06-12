@@ -6,13 +6,14 @@ class Multicast
 {
 
 private:
+	const uint16_t mPacketSize;
+	char* mPacketBuffer;
 	WiFiUDP mUDP;
 	volatile bool mAcceptingPackets;
-	SemaphoreHandle_t mSemAcceptingPackets;
-	char packetBuffer[16];
+	volatile SemaphoreHandle_t mSemAcceptingPackets;
 
 public:
-	Multicast();
+	Multicast(uint16_t packetSize);
 	
 	void init(IPAddress multicastAddress, uint16_t port);
 	void tick();

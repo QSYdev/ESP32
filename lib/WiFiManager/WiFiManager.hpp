@@ -7,7 +7,7 @@ class WiFiManager
 public:
 	WiFiManager();
 
-	void init(const char* ssid, const char* password, int maxConnections, IPAddress localIp);
+	void init(const char* ssid, const char* password, int maxConnections);
 	void tick();
 	
 };

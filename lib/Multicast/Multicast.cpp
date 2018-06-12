@@ -1,7 +1,9 @@
 #include <Multicast.hpp>
 
-Multicast::Multicast()
-	:mUDP(), mAcceptingPackets(false), mSemAcceptingPackets(xSemaphoreCreateMutex())
+WiFiClient client;
+
+Multicast::Multicast(uint16_t packetSize)
+	:mPacketSize(packetSize), mPacketBuffer(new char[packetSize]()), mUDP(), mAcceptingPackets(false), mSemAcceptingPackets(xSemaphoreCreateMutex())
 {
 }
 
@@ -14,7 +16,7 @@ void Multicast::tick()
 {
 	if (mUDP.parsePacket() > 0 && isAcceptingPackets())
 	{
-		int message_size = mUDP.read(packetBuffer, 16);
+		int message_size = mUDP.read(mPacketBuffer, mPacketSize);
 
 		Serial.print("Packet received from ");
 		Serial.print(mUDP.remoteIP());
@@ -22,6 +24,8 @@ void Multicast::tick()
 		Serial.print(mUDP.remotePort());
 		Serial.print(" : SIZE = ");
 		Serial.println(message_size);
+		Serial.print("Resultado de la conexion = ");
+		Serial.println(client.connect(mUDP.remoteIP(), 3000));
 	}
 }
 

@@ -2,8 +2,8 @@
 
 WiFiClient client;
 
-Multicast::Multicast(uint16_t packetSize)
-	:mPacketSize(packetSize), mPacketBuffer(new char[packetSize]()), mUDP(), mAcceptingPackets(false), mSemAcceptingPackets(xSemaphoreCreateMutex())
+Multicast::Multicast(Terminal* terminal, uint16_t packetSize)
+	:mTerminal(terminal), mPacketSize(packetSize), mPacketBuffer(new char[packetSize]()), mUDP(), mAcceptingPackets(false), mSemAcceptingPackets(xSemaphoreCreateMutex())
 {
 }
 

@@ -2,9 +2,14 @@
 
 WiFiClient client;
 
-Multicast::Multicast(Terminal* terminal, uint16_t packetSize)
-	:mTerminal(terminal), mPacketSize(packetSize), mPacketBuffer(new char[packetSize]()), mUDP(), mAcceptingPackets(false), mSemAcceptingPackets(xSemaphoreCreateMutex())
+Multicast::Multicast(uint16_t packetSize)
+	:Observer(), mPacketSize(packetSize), mPacketBuffer(new char[packetSize]()), mUDP(), mAcceptingPackets(false), mSemAcceptingPackets(xSemaphoreCreateMutex())
 {
+}
+
+void Multicast::notify(Event* event)
+{
+	Serial.println("Evento recibido en multicast");
 }
 
 void Multicast::init(IPAddress multicastAddress, uint16_t port)

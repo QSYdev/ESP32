@@ -1,7 +1,7 @@
 #include <WiFiManager.hpp>
+#include <WiFi.h>
 
-WiFiManager::WiFiManager(Terminal* terminal)
-	:mTerminal(terminal)
+WiFiManager::WiFiManager()
 {
 }
 

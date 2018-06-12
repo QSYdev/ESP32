@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <WiFiManager.hpp>
 #include <Terminal.hpp>
 
 Terminal terminal;

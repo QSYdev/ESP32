@@ -1,13 +1,12 @@
 #pragma once
 #include <WiFi.h>
-#include <Udp.h> 
-#include <Terminal.hpp>
+#include <Udp.h>
+#include <Observer.hpp>
 
-class Multicast
+class Multicast : public Observable, public Observer
 {
 
 private:
-	Terminal* mTerminal;
 	const uint16_t mPacketSize;
 	char* mPacketBuffer;
 	WiFiUDP mUDP;
@@ -15,7 +14,9 @@ private:
 	volatile SemaphoreHandle_t mSemAcceptingPackets;
 
 public:
-	Multicast(Terminal* terminal, uint16_t packetSize);
+	Multicast(uint16_t packetSize);
+	
+	void notify(Event* event) override;
 	
 	void init(IPAddress multicastAddress, uint16_t port);
 	void tick();

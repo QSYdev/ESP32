@@ -1,10 +1,9 @@
 #pragma once
-#include <IPAddress.h>
-#include <QSYPacket.h>
 #include <WiFiManager.hpp>
 #include <Multicast.hpp>
+#include <Observer.hpp>
 
-class Terminal
+class Terminal : public Observable, public Observer
 {
 
 private:
@@ -14,10 +13,11 @@ private:
 public:
 	Terminal();
 
+	void notify(Event* event) override;
+
 	void start();
 	void tick();
 	void searchNodes();
 	void finalizeNodesSearching();
-	void packetReceived(IPAddress ipRemote, struct qsy_packet* packet);
 
 };

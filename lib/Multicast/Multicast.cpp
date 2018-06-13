@@ -1,15 +1,13 @@
 #include <Multicast.hpp>
 
-WiFiClient client;
-
 Multicast::Multicast(uint16_t packetSize)
-	:Observer(), mPacketSize(packetSize), mPacketBuffer(new char[packetSize]()), mUDP(), mAcceptingPackets(false), mSemAcceptingPackets(xSemaphoreCreateMutex())
+	:mPacketSize(packetSize), mPacketBuffer(new char[packetSize]()), mUDP()
 {
 }
 
-void Multicast::notify(Event* event)
+Multicast::~Multicast()
 {
-	Serial.println("Evento recibido en multicast");
+	delete[] mPacketBuffer;
 }
 
 void Multicast::init(IPAddress multicastAddress, uint16_t port)
@@ -19,37 +17,17 @@ void Multicast::init(IPAddress multicastAddress, uint16_t port)
 
 void Multicast::tick()
 {
-	if (mUDP.parsePacket() > 0 && isAcceptingPackets())
+	if (mUDP.parsePacket() > 0)
 	{
-		int message_size = mUDP.read(mPacketBuffer, mPacketSize);
-
-		Serial.print("Packet received from ");
-		Serial.print(mUDP.remoteIP());
-		Serial.print(":");
-		Serial.print(mUDP.remotePort());
-		Serial.print(" : SIZE = ");
-		Serial.println(message_size);
-		Serial.print("Resultado de la conexion = ");
-		Serial.println(client.connect(mUDP.remoteIP(), 3000));
+		if (mUDP.read(mPacketBuffer, mPacketSize) != mPacketSize)
+			return;
+			
+		qsy_packet* packet = reinterpret_cast<qsy_packet*>(mPacketBuffer);
+		if (packet_is_valid(packet))
+		{
+			PacketReceived* event = new PacketReceived(mUDP.remoteIP(), packet);
+			notify(event);
+			delete event;
+		}
 	}
-}
-
-bool Multicast::isAcceptingPackets()
-{
-	bool result;
-	xSemaphoreTake(mSemAcceptingPackets, portTICK_PERIOD_MS);
-	{
-		result = mAcceptingPackets;
-	}
-	xSemaphoreGive(mSemAcceptingPackets);
-	return result;
-}
-
-void Multicast::setAcceptingPackets(bool isAcceptingPackets)
-{
-	xSemaphoreTake(mSemAcceptingPackets, portTICK_PERIOD_MS);
-	{
-		mAcceptingPackets = isAcceptingPackets;
-	}
-	xSemaphoreGive(mSemAcceptingPackets);
 }

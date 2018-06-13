@@ -9,7 +9,6 @@ void setup()
 	delay(10);
 
 	terminal.start();
-	terminal.searchNodes();
 }
 
 void loop()

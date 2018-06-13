@@ -1,4 +1,4 @@
-#include <QSYPacket.h>
+#include <QSYPacket.hpp>
 #include <string.h>
 #include <arpa/inet.h>
 

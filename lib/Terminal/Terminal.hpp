@@ -3,7 +3,7 @@
 #include <Multicast.hpp>
 #include <Observer.hpp>
 
-class Terminal : public Observable, public Observer
+class Terminal : public Observer
 {
 
 private:
@@ -17,7 +17,5 @@ public:
 
 	void start();
 	void tick();
-	void searchNodes();
-	void finalizeNodesSearching();
 
 };

@@ -1,14 +1,24 @@
 #include <Terminal.hpp>
-#include <QSYPacket.h>
+#include <QSYPacket.hpp>
 
 Terminal::Terminal()
 	:mWiFiManager(), mMulticast(QSY_PACKET_SIZE)
 {
+	mMulticast.add(this);
 }
 
 void Terminal::notify(Event* event)
 {
-	Serial.println("Event recibido en la terminal.");
+	switch(event->mType)
+	{
+		case Event::event_type::PacketReceived:
+			PacketReceived* packetReceivedEvent = reinterpret_cast<PacketReceived*>(event);
+			Serial.print("REMOTE IP = ");
+			Serial.print(packetReceivedEvent->mIpRemote);
+			Serial.print(" ID = ");
+			Serial.println(packet_get_id(packetReceivedEvent->mPacket));
+			break;
+	}
 }
 
 void Terminal::start()
@@ -19,16 +29,5 @@ void Terminal::start()
 
 void Terminal::tick()
 {
-	mWiFiManager.tick();
 	mMulticast.tick();
-}
-
-void Terminal::searchNodes()
-{
-	mMulticast.setAcceptingPackets(true);
-}
-
-void Terminal::finalizeNodesSearching()
-{
-	mMulticast.setAcceptingPackets(false);
 }

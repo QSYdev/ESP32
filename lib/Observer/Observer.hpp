@@ -13,7 +13,7 @@ public:
 	};
 
 	const event_type mType;
-	inline Event(event_type type)	:mType(type) {}
+	inline Event(const event_type type)	:mType(type) {}
 };
 
 class PacketReceived : public Event
@@ -23,7 +23,7 @@ public:
 	const IPAddress mIpRemote;
 	const qsy_packet* mPacket;
 
-	inline PacketReceived(IPAddress ipRemote, qsy_packet* packet)	:Event(event_type::PacketReceived), mIpRemote(ipRemote), mPacket(packet) {}
+	inline PacketReceived(const IPAddress ipRemote, const qsy_packet* packet)	:Event(event_type::PacketReceived), mIpRemote(ipRemote), mPacket(packet) {}
 };
 
 class Observer
@@ -32,7 +32,7 @@ class Observer
 public:
 	Observer();
 
-	virtual void notify(Event* event) = 0;
+	virtual void notify(const Event* event) = 0;
 
 };
 
@@ -49,6 +49,6 @@ public:
 	void remove(Observer* observer);
 
 protected:
-	void notify(Event* event);
+	void notify(const Event* event);
 
 };

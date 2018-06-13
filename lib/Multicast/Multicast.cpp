@@ -25,9 +25,8 @@ void Multicast::tick()
 		qsy_packet* packet = reinterpret_cast<qsy_packet*>(mPacketBuffer);
 		if (packet_is_valid(packet))
 		{
-			PacketReceived* event = new PacketReceived(mUDP.remoteIP(), packet);
-			notify(event);
-			delete event;
+			PacketReceived event(mUDP.remoteIP(), packet);
+			notify(&event);
 		}
 	}
 }

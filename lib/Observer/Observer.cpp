@@ -19,7 +19,7 @@ void Observable::remove(Observer* observer)
 	mObservers.remove(observer);
 }
 
-void Observable::notify(Event* event)
+void Observable::notify(const Event* event)
 {
 	mObservers.begin();
 	while (!mObservers.end())

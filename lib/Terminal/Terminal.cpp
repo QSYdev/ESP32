@@ -10,12 +10,12 @@ Terminal::Terminal()
 	mTCPReceiver.add(this);
 }
 
-void Terminal::notify(Event* event)
+void Terminal::notify(const Event* event)
 {
 	switch(event->mType)
 	{
 		case Event::event_type::PacketReceived:
-			PacketReceived* packetReceivedEvent = reinterpret_cast<PacketReceived*>(event);
+			const PacketReceived* packetReceivedEvent = reinterpret_cast<const PacketReceived*>(event);
 			switch(packet_get_type(packetReceivedEvent->mPacket))
 			{
 				case packet_type::hello:

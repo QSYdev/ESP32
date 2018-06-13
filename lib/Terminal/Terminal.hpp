@@ -17,7 +17,7 @@ private:
 public:
 	Terminal();
 
-	void notify(Event* event) override;
+	void notify(const Event* event) override;
 
 	void start();
 	void tick();

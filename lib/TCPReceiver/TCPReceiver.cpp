@@ -34,9 +34,8 @@ void TCPReceiver::tick()
 	full.begin();
 	while (!full.end())
 	{
-		PacketReceived* event = new PacketReceived({0, 0, 0, 0}, full.next());
-		notify(event);
-		delete event;
+		PacketReceived event({0, 0, 0, 0}, full.next());
+		notify(&event);
 	}
 }
 

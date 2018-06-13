@@ -48,17 +48,10 @@ public:
 		Node* current = previous;
 		bool found = false;
 
-		while (current != nullptr && !found)
+		while (current != nullptr && current->mData != data)
 		{
-			if (current->mData == data)
-			{
-				found = true;
-			}
-			else
-			{
-				previous = current;
-				current = current->mNext;
-			}
+			previous = current;
+			current = current->mNext;
 		}
 
 		if (found)

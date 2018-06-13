@@ -33,7 +33,7 @@ bool packet_is_valid(const struct qsy_packet* packet)
 	    packet->privated [2] == 'Y';
 }
 
-enum packet_type packet_get_type(struct qsy_packet* packet)
+enum packet_type packet_get_type(const struct qsy_packet* packet)
 {
 	struct qsy_packet_p* p = (struct qsy_packet_p*) packet;
 	return (enum packet_type) p->type;

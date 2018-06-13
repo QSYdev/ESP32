@@ -40,13 +40,15 @@ class Observable
 {
 
 private:
-	List<Observer> mObservers;
+	List<Observer*> mObservers;
 
 public:
 	Observable();
 
 	void add(Observer* observer);
 	void remove(Observer* observer);
+
+protected:
 	void notify(Event* event);
 
 };

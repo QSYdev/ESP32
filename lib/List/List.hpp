@@ -7,10 +7,10 @@ private:
 	class Node
 	{
 	public:
-		T* mData;
+		T mData;
 		Node* mNext;
 
-		inline Node(T* data)	:mData(data), mNext(nullptr)	{}
+		inline Node(T data)	:mData(data), mNext(nullptr)	{}
 	};
 
 private:
@@ -21,7 +21,7 @@ private:
 
 public:
 	inline List()	:mFirst(nullptr), mCurrent(nullptr), mLast(nullptr), mSize(0)	{}
-	inline void add(T* data)
+	inline void add(T data)
 	{
 		if (mSize)
 		{
@@ -35,13 +35,27 @@ public:
 		}
 		++mSize;
 	}
-	inline bool remove(T* data)	{ return false;}
+	inline bool remove(T data)	
+	{
+		#warning Not implemented yet!
+		return false;
+	}
+	inline bool include(T data)
+	{
+		begin();
+		while (!end())
+		{
+			if (data == next())
+				return true;
+		}
+		return false;
+	}
 	inline int size()			{ return mSize; }
 	inline void begin() 		{ mCurrent = mFirst; }
 	inline bool end()			{ return mCurrent == nullptr; }
-	inline T* next()
+	inline T next()
 	{
-		T* data = mCurrent->mData;
+		T data = mCurrent->mData;
 		mCurrent = mCurrent->mNext;
 		return data;
 	}

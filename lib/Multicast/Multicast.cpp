@@ -1,7 +1,7 @@
 #include <Multicast.hpp>
 
 Multicast::Multicast(uint16_t packetSize)
-	:mPacketSize(packetSize), mPacketBuffer(new char[packetSize]()), mUDP()
+	:mPacketSize(packetSize), mAcceptingPackets(false), mPacketBuffer(new char[packetSize]()), mUDP()
 {
 }
 
@@ -17,7 +17,7 @@ void Multicast::init(IPAddress multicastAddress, uint16_t port)
 
 void Multicast::tick()
 {
-	if (mUDP.parsePacket() > 0)
+	if (mUDP.parsePacket() > 0 && isAcceptingPackets())
 	{
 		if (mUDP.read(mPacketBuffer, mPacketSize) != mPacketSize)
 			return;

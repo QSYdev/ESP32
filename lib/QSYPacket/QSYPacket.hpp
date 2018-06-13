@@ -30,7 +30,7 @@ struct color {
 void packet_init(struct qsy_packet* packet);
 bool packet_is_valid(const struct qsy_packet* packet);
 
-enum packet_type packet_get_type(struct qsy_packet* packet);
+enum packet_type packet_get_type(const struct qsy_packet* packet);
 uint16_t packet_get_id(const struct qsy_packet* packet);
 struct color packet_get_color(const struct qsy_packet* packet);
 uint32_t packet_get_delay(const struct qsy_packet* packet);

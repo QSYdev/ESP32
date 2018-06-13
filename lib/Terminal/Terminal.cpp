@@ -28,10 +28,10 @@ void Terminal::notify(const Event* event)
 					if (!mConnectedNodes.include(nodeId))
 					{
 						WiFiClient* client = new WiFiClient();
+						client.setNoDelay(true);
 						if (client->connect(packetReceivedEvent->mIpRemote, QSY_TCP_SERVER_PORT))
 						{
-							Serial.print("NEW CLIENT NO DELAY = ");
-							Serial.println(client->setNoDelay(true));
+							Serial.println("NEW CLIENT");
 							mConnectedNodes.add(nodeId);
 							mTCPReceiver.hello(client);
 						}

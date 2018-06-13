@@ -74,6 +74,17 @@ public:
 		return found;
 	}
 
+	inline T removeFirst()
+	{
+		Node* first = mFirst;
+		T data = mFirst->mData;
+		mFirst = mFirst->mNext;
+		first->mNext = nullptr;
+		delete first;
+		--mSize;
+		return data;
+	}
+
 	inline bool include(T data)
 	{
 		Node* current = mCurrent;

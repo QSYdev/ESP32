@@ -5,7 +5,7 @@
 #include <Observer.hpp>
 #include <List.hpp>
 
-class Terminal : public Observer
+class Terminal : public SynchronousObserver
 {
 
 private:

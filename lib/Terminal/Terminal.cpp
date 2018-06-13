@@ -16,6 +16,9 @@ void Terminal::notify(const Event* event)
 	{
 		case Event::event_type::PacketReceived:
 			const PacketReceived* packetReceivedEvent = reinterpret_cast<const PacketReceived*>(event);
+			if (!packet_is_valid(packetReceivedEvent->mPacket))
+				return;
+
 			switch(packet_get_type(packetReceivedEvent->mPacket))
 			{
 				case packet_type::hello:
@@ -24,11 +27,11 @@ void Terminal::notify(const Event* event)
 					int nodeId = packet_get_id(packetReceivedEvent->mPacket);
 					if (!mConnectedNodes.include(nodeId))
 					{
-						Serial.println("NEW NODE");
 						WiFiClient* client = new WiFiClient();
 						if (client->connect(packetReceivedEvent->mIpRemote, QSY_TCP_SERVER_PORT))
 						{
-							Serial.println("NEW CLIENT");
+							Serial.print("NEW CLIENT NO DELAY = ");
+							Serial.println(client->setNoDelay(true));
 							mConnectedNodes.add(nodeId);
 							mTCPReceiver.hello(client);
 						}

@@ -14,5 +14,4 @@ void setup()
 void loop()
 {
 	terminal.tick();
-	delay(20);
 }

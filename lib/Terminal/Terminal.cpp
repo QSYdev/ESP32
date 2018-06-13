@@ -32,6 +32,10 @@ void Terminal::notify(const Event* event)
 							mConnectedNodes.add(nodeId);
 							mTCPReceiver.hello(client);
 						}
+						else
+						{
+							delete client;
+						}
 					}
 					break;
 				}

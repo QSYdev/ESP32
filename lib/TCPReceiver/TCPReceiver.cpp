@@ -11,7 +11,7 @@ void TCPReceiver::init()
 
 void TCPReceiver::tick()
 {
-	List<qsy_packet*> full;
+	List<ListElement*> nodesToNotify;
 
 	mConnectedNodes.begin();
 	while (!mConnectedNodes.end())
@@ -25,16 +25,17 @@ void TCPReceiver::tick()
 			currentElement->mWiFiClient->flush();
 			if (!currentElement->mAvailable)
 			{
-				full.add(reinterpret_cast<qsy_packet*>(currentElement->mBuffer));
+				nodesToNotify.add(currentElement);
 				currentElement->mAvailable = 0;
 			}
 		}
 	}
 
-	full.begin();
-	while (!full.end())
+	nodesToNotify.begin();
+	while (!nodesToNotify.end())
 	{
-		PacketReceived event({0, 0, 0, 0}, full.next());
+		ListElement* element = nodesToNotify.next();
+		PacketReceived event(element->mWiFiClient->remoteIP(), reinterpret_cast<qsy_packet*>(element->mBuffer));
 		notify(&event);
 	}
 }

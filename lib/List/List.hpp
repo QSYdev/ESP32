@@ -3,14 +3,18 @@
 template<class T>
 class List
 {
+
 private:
 	class Node
 	{
+
 	public:
 		T mData;
 		Node* mNext;
 
 		inline Node(T data)	:mData(data), mNext(nullptr)	{}
+		inline ~Node() { delete mNext; }
+
 	};
 
 private:
@@ -21,6 +25,8 @@ private:
 
 public:
 	inline List()	:mFirst(nullptr), mCurrent(nullptr), mLast(nullptr), mSize(0)	{}
+	inline ~List() { delete mFirst; }
+	
 	inline void add(T data)
 	{
 		if (mSize)
@@ -35,24 +41,62 @@ public:
 		}
 		++mSize;
 	}
+
 	inline bool remove(T data)	
 	{
-		#warning Not implemented yet!
-		return false;
+		Node* previous = mFirst;
+		Node* current = previous;
+		bool found = false;
+
+		while (current != nullptr && !found)
+		{
+			if (current->mData == data)
+			{
+				found = true;
+			}
+			else
+			{
+				previous = current;
+				current = current->mNext;
+			}
+		}
+
+		if (found)
+		{
+			if (current == previous)
+			{
+				mFirst = current->mNext;
+				mLast = (mSize > 1) ? mLast : mFirst;
+			}
+			else
+			{
+				previous->mNext = current->mNext;
+			}
+
+			current->mNext = nullptr;
+			delete current;
+			--mSize;
+		}
+
+		return found;
 	}
+
 	inline bool include(T data)
 	{
+		Node* current = mCurrent;
+		bool found = false;
 		begin();
-		while (!end())
-		{
-			if (data == next())
-				return true;
-		}
-		return false;
+		while (!end() && data != next());
+		mCurrent = current;
+		return found;
 	}
-	inline int size()			{ return mSize; }
-	inline void begin() 		{ mCurrent = mFirst; }
-	inline bool end()			{ return mCurrent == nullptr; }
+
+	inline int size()		{ return mSize; }
+
+	inline void begin() 	{ mCurrent = mFirst; }
+
+	inline bool end()		{ return mCurrent == nullptr; }
+	
 	inline T next()
 	{
 		T data = mCurrent->mData;

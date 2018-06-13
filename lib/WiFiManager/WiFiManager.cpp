@@ -5,11 +5,6 @@ WiFiManager::WiFiManager()
 {
 }
 
-WiFiManager::~WiFiManager()
-{
-	#warning Not Implemented yed!
-}
-
 void WiFiManager::init(const char* ssid, const char* password, int maxConnections)
 {
 	WiFi.mode(WIFI_AP);

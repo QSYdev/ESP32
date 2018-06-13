@@ -2,7 +2,7 @@
 #include <QSYPacket.hpp>
 
 Terminal::Terminal()
-	:mWiFiManager(), mMulticast(QSY_PACKET_SIZE), mTCPReceiver(QSY_PACKET_SIZE), mConnectedNodes()
+	:mWiFiManager(), mMulticast(), mTCPReceiver(), mConnectedNodes()
 {
 	mMulticast.add(this);
 	mMulticast.setAcceptingPackets(true);
@@ -28,10 +28,10 @@ void Terminal::notify(const Event* event)
 					if (!mConnectedNodes.include(nodeId))
 					{
 						WiFiClient* client = new WiFiClient();
-						client.setNoDelay(true);
 						if (client->connect(packetReceivedEvent->mIpRemote, QSY_TCP_SERVER_PORT))
 						{
 							Serial.println("NEW CLIENT");
+							client->setNoDelay(true);
 							mConnectedNodes.add(nodeId);
 							mTCPReceiver.hello(client);
 						}
@@ -66,8 +66,8 @@ void Terminal::notify(const Event* event)
 
 void Terminal::start()
 {
-	mWiFiManager.init(QSY_SSID, QSY_PASSWORD, QSY_MAX_CONNECTIONS);
-	mMulticast.init(QSY_MULTICAST_ADDRESS, QSY_MULTICAST_PORT);
+	mWiFiManager.init();
+	mMulticast.init();
 	mTCPReceiver.init();
 }
 

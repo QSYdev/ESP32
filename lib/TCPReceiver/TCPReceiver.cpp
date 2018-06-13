@@ -1,7 +1,7 @@
 #include <TCPReceiver.hpp>
 
-TCPReceiver::TCPReceiver(int packetSize)
-	:mPacketSize(packetSize), mConnectedNodes()
+TCPReceiver::TCPReceiver()
+	:mConnectedNodes()
 {
 }
 
@@ -42,5 +42,5 @@ void TCPReceiver::tick()
 
 void TCPReceiver::hello(WiFiClient* client)
 {
-	mConnectedNodes.add(new ListElement(client, mPacketSize));
+	mConnectedNodes.add(new ListElement(client));
 }

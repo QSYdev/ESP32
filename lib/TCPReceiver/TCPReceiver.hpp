@@ -11,19 +11,18 @@ private:
 	{
 	public:
 		WiFiClient* mWiFiClient;
-		uint8_t* mBuffer;
+		char mBuffer[QSY_PACKET_SIZE];
 		int mAvailable;
 
-		ListElement(WiFiClient* wifiClient, int packetSize)	:mWiFiClient(wifiClient), mBuffer(new uint8_t[packetSize]()), mAvailable(packetSize) {}
-		~ListElement()	{ delete[] mBuffer; }
+		ListElement(WiFiClient* wifiClient)	:mWiFiClient(wifiClient), mAvailable(QSY_PACKET_SIZE) {}
+
 	};
 
 private:
-	const int mPacketSize;
 	List<ListElement*> mConnectedNodes;
 
 public:
-	TCPReceiver(int packetSize);
+	TCPReceiver();
 
 	void init();
 	void tick();

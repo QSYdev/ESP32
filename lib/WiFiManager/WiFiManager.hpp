@@ -6,6 +6,6 @@ class WiFiManager
 public:
 	WiFiManager();
 	
-	void init(const char* ssid, const char* password, int maxConnections);
+	void init();
 	
 };

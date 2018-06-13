@@ -62,7 +62,6 @@ private:
 
 public:
 	AsynchronousObserver();
-	~AsynchronousObserver();
 
 	void notify(const Event* event) override;
 	const Event* getEvent();

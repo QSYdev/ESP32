@@ -1,25 +1,20 @@
 #include <Multicast.hpp>
 
-Multicast::Multicast(uint16_t packetSize)
-	:mPacketSize(packetSize), mAcceptingPackets(false), mPacketBuffer(new char[packetSize]()), mUDP()
+Multicast::Multicast()
+	:mAcceptingPackets(false), mUDP()
 {
 }
 
-Multicast::~Multicast()
+void Multicast::init()
 {
-	delete[] mPacketBuffer;
-}
-
-void Multicast::init(IPAddress multicastAddress, uint16_t port)
-{
-	mUDP.beginMulticast(multicastAddress, port);
+	mUDP.beginMulticast(QSY_MULTICAST_ADDRESS, QSY_MULTICAST_PORT);
 }
 
 void Multicast::tick()
 {
 	if (mUDP.parsePacket() > 0 && isAcceptingPackets())
 	{
-		if (mUDP.read(mPacketBuffer, mPacketSize) != mPacketSize)
+		if (mUDP.read(mPacketBuffer, QSY_PACKET_SIZE) != QSY_PACKET_SIZE)
 			return;
 			
 		qsy_packet* packet = reinterpret_cast<qsy_packet*>(mPacketBuffer);

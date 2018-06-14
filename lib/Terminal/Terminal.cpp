@@ -4,11 +4,10 @@
 Terminal::Terminal()
 	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mConnectedNodes()
 {
-	mMulticast.add(this);
 	mMulticast.setAcceptingPackets(true);
-
+	
+	mMulticast.add(this);
 	mTCPReceiver.add(this);
-
 	mDeadNodesPurger.add(this);
 }
 

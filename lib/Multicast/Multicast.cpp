@@ -12,7 +12,7 @@ void Multicast::init()
 
 void Multicast::tick()
 {
-	if (mUDP.parsePacket() > 0 && isAcceptingPackets())
+	if (isAcceptingPackets() && mUDP.parsePacket() > 0)
 	{
 		if (mUDP.read(mPacketBuffer, QSY_PACKET_SIZE) != QSY_PACKET_SIZE)
 			return;

@@ -42,7 +42,7 @@ void TCPReceiver::tick()
 
 void TCPReceiver::hello(uint16_t physicalId, WiFiClient* client)
 {
-	mConnectedNodes.add(new ListElement(client), physicalId);
+	mConnectedNodes.addById(physicalId, new ListElement(client));
 }
 
 void TCPReceiver::disconnectedNode(uint16_t physicalId)

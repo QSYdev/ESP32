@@ -46,7 +46,7 @@ void DeadNodesPurger::tick()
 
 void DeadNodesPurger::hello(uint16_t physicalId)
 {
-	mConnectedNodes.add(new ListElement(physicalId, millis()), physicalId);
+	mConnectedNodes.addById(physicalId, new ListElement(physicalId, millis()));
 }
 
 void DeadNodesPurger::touche(uint16_t physicalId)

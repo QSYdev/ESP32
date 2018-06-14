@@ -28,7 +28,12 @@ public:
 	inline List()	:mFirst(nullptr), mCurrent(nullptr), mLast(nullptr), mSize(0)	{}
 	inline ~List() { delete mFirst; }
 	
-	inline void add(T data, int id = 0)
+	inline void add(T data)
+	{
+		addById(0, data);
+	}
+
+	inline void addById(int id, T data)
 	{
 		Node* nodeToAdd = new Node(id, data);
 		if (mSize)
@@ -48,7 +53,7 @@ public:
 	{
 		Node* previous = mFirst;
 		Node* current = previous;
-		T result;
+		T result = nullptr;
 
 		while (current != nullptr && current->mId != id)
 		{

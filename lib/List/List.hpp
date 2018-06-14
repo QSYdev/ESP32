@@ -9,10 +9,11 @@ private:
 	{
 
 	public:
+		int mId;
 		T mData;
 		Node* mNext;
 
-		inline Node(T data)	:mData(data), mNext(nullptr)	{}
+		inline Node(int id, T data)	:mId(id), mData(data), mNext(nullptr)	{}
 		inline ~Node() { delete mNext; }
 
 	};
@@ -27,35 +28,37 @@ public:
 	inline List()	:mFirst(nullptr), mCurrent(nullptr), mLast(nullptr), mSize(0)	{}
 	inline ~List() { delete mFirst; }
 	
-	inline void add(T data)
+	inline void add(T data, int id = 0)
 	{
+		Node* nodeToAdd = new Node(id, data);
 		if (mSize)
 		{
-			mLast->mNext = new Node(data);
+			mLast->mNext = nodeToAdd;
 			mLast = mLast->mNext;
 		}
 		else
 		{
-			mLast = new Node(data);
+			mLast = nodeToAdd;
 			mFirst = mLast;
 		}
 		++mSize;
 	}
 
-	inline bool remove(T data)	
+	inline T removeById(int id)	
 	{
 		Node* previous = mFirst;
 		Node* current = previous;
-		bool found = false;
+		T result;
 
-		while (current != nullptr && current->mData != data)
+		while (current != nullptr && current->mId != id)
 		{
 			previous = current;
 			current = current->mNext;
 		}
 
-		if (found)
+		if (current != nullptr)
 		{
+			result = current->mData;
 			if (current == previous)
 			{
 				mFirst = current->mNext;
@@ -71,28 +74,57 @@ public:
 			--mSize;
 		}
 
-		return found;
+		return result;
 	}
 
-	inline T removeFirst()
+	inline bool remove(T data)
 	{
-		Node* first = mFirst;
-		T data = mFirst->mData;
-		mFirst = mFirst->mNext;
-		first->mNext = nullptr;
-		delete first;
-		--mSize;
-		return data;
+		Node* previous = mFirst;
+		Node* current = previous;
+
+		while (current != nullptr && current->mData != data)
+		{
+			previous = current;
+			current = current->mNext;
+		}
+
+		if (current != nullptr)
+		{
+			if (current == previous)
+			{
+				mFirst = current->mNext;
+				mLast = (mSize > 1) ? mLast : mFirst;
+			}
+			else
+			{
+				previous->mNext = current->mNext;
+			}
+
+			current->mNext = nullptr;
+			delete current;
+			--mSize;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	inline T findById(int id)
+	{
+		Node* current = mFirst;
+
+		while (current != nullptr && current->mId != id);
+
+		return (current) ? current->mData : 0;
 	}
 
 	inline bool include(T data)
 	{
-		Node* current = mCurrent;
-		bool found = false;
-		begin();
-		while (!end() && data != next());
-		mCurrent = current;
-		return found;
+		Node* current = mFirst;
+		while (current != nullptr && current->mData != data);
+
+		return (current);
 	}
 
 	inline int size()		{ return mSize; }

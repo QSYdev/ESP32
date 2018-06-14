@@ -2,13 +2,16 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define QSY_SSID				"ESP32"
-#define QSY_PASSWORD			"123456789"
-#define QSY_MAX_CONNECTIONS		8
-#define QSY_PACKET_SIZE			16
-#define QSY_MULTICAST_ADDRESS	{224, 0, 0, 12}
-#define QSY_MULTICAST_PORT		3000
-#define QSY_TCP_SERVER_PORT		3000
+#define QSY_SSID						"ESP32"
+#define QSY_PASSWORD					"123456789"
+#define QSY_MAX_CONNECTIONS				8
+#define QSY_PACKET_SIZE					16
+#define QSY_MULTICAST_ADDRESS			{224, 0, 0, 12}
+#define QSY_MULTICAST_PORT				3000
+#define QSY_TCP_SERVER_PORT				3000
+#define QSY_MAX_ALLOWED_TIME			750
+#define QSY_MAX_TRIES					5
+#define QSY_DEAD_NODES_PURGER_PERIOD	1125
 
 struct qsy_packet {
 	char privated[QSY_PACKET_SIZE];

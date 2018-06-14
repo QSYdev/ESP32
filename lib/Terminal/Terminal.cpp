@@ -2,12 +2,14 @@
 #include <QSYPacket.hpp>
 
 Terminal::Terminal()
-	:mWiFiManager(), mMulticast(), mTCPReceiver(), mConnectedNodes()
+	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mConnectedNodes()
 {
 	mMulticast.add(this);
 	mMulticast.setAcceptingPackets(true);
 
 	mTCPReceiver.add(this);
+
+	mDeadNodesPurger.add(this);
 }
 
 void Terminal::notify(const Event* event)
@@ -15,25 +17,27 @@ void Terminal::notify(const Event* event)
 	switch(event->mType)
 	{
 		case Event::event_type::PacketReceived:
+		{
 			const PacketReceived* packetReceivedEvent = reinterpret_cast<const PacketReceived*>(event);
 			if (!packet_is_valid(packetReceivedEvent->mPacket))
 				return;
 
+			uint16_t physicalId = packet_get_id(packetReceivedEvent->mPacket);
 			switch(packet_get_type(packetReceivedEvent->mPacket))
 			{
 				case packet_type::hello:
 				{
-					Serial.println("HELLO");
-					int nodeId = packet_get_id(packetReceivedEvent->mPacket);
-					if (!mConnectedNodes.include(nodeId))
+					if (!mConnectedNodes.include(physicalId))
 					{
 						WiFiClient* client = new WiFiClient();
 						if (client->connect(packetReceivedEvent->mIpRemote, QSY_TCP_SERVER_PORT))
 						{
-							Serial.println("NEW CLIENT");
+							Serial.print("NEW NODE ID = ");
+							Serial.println(physicalId);
 							client->setNoDelay(true);
-							mConnectedNodes.add(nodeId);
-							mTCPReceiver.hello(client);
+							mConnectedNodes.add(physicalId);
+							mTCPReceiver.hello(physicalId, client);
+							mDeadNodesPurger.hello(physicalId);
 						}
 						else
 						{
@@ -45,13 +49,13 @@ void Terminal::notify(const Event* event)
 
 				case packet_type::touche:
 				{
-					Serial.println("TOUCHE");
+					mDeadNodesPurger.touche(physicalId);
 					break;
 				}
 
 				case packet_type::keepalive:
 				{
-					Serial.println("KEEP ALIVE");
+					mDeadNodesPurger.keepAlive(physicalId);
 					break;
 				}
 
@@ -61,6 +65,20 @@ void Terminal::notify(const Event* event)
 				}
 			}
 			break;
+		}
+
+		case Event::event_type::DisconnectedNode:
+		{
+			const DisconnectedNode* disconnectedNodeEvent = reinterpret_cast<const DisconnectedNode*>(event);
+			Serial.print("DISCONNECTED NODE ID = ");
+			Serial.println(disconnectedNodeEvent->mPhysicalId);
+			if (mConnectedNodes.remove(disconnectedNodeEvent->mPhysicalId))
+			{
+				mTCPReceiver.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
+				mDeadNodesPurger.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
+			}
+			break;
+		}
 	}
 }
 
@@ -69,10 +87,13 @@ void Terminal::start()
 	mWiFiManager.init();
 	mMulticast.init();
 	mTCPReceiver.init();
+	mDeadNodesPurger.init();
 }
 
 void Terminal::tick()
 {
+	mWiFiManager.tick();
 	mMulticast.tick();
 	mTCPReceiver.tick();
+	mDeadNodesPurger.tick();
 }

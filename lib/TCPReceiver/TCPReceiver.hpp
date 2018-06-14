@@ -27,6 +27,7 @@ public:
 	void init();
 	void tick();
 
-	void hello(WiFiClient* client);
+	void hello(uint16_t physicalId, WiFiClient* client);
+	void disconnectedNode(uint16_t physicalId);
 
 };

@@ -7,5 +7,6 @@ public:
 	WiFiManager();
 	
 	void init();
+	void tick();
 	
 };

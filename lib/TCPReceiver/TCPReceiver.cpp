@@ -22,11 +22,11 @@ void TCPReceiver::tick()
 		{
 			int bytesToRead = (available > currentElement->mAvailable) ? currentElement->mAvailable : available;
 			currentElement->mAvailable -= currentElement->mWiFiClient->readBytes(currentElement->mBuffer, bytesToRead);
-			currentElement->mWiFiClient->flush();
+
 			if (!currentElement->mAvailable)
 			{
 				nodesToNotify.add(currentElement);
-				currentElement->mAvailable = 0;
+				currentElement->mAvailable = QSY_PACKET_SIZE;
 			}
 		}
 	}
@@ -40,7 +40,17 @@ void TCPReceiver::tick()
 	}
 }
 
-void TCPReceiver::hello(WiFiClient* client)
+void TCPReceiver::hello(uint16_t physicalId, WiFiClient* client)
 {
-	mConnectedNodes.add(new ListElement(client));
+	mConnectedNodes.add(new ListElement(client), physicalId);
+}
+
+void TCPReceiver::disconnectedNode(uint16_t physicalId)
+{
+	ListElement* element = mConnectedNodes.removeById(physicalId);
+	if (element != nullptr)
+	{
+		delete element->mWiFiClient;
+		delete element;
+	}
 }

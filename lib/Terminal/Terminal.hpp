@@ -2,17 +2,19 @@
 #include <WiFiManager.hpp>
 #include <Multicast.hpp>
 #include <TCPReceiver.hpp>
+#include <DeadNodesPurger.hpp>
 #include <Observer.hpp>
 #include <List.hpp>
 
-class Terminal : public SynchronousObserver
+class Terminal : public Observer
 {
 
 private:
 	WiFiManager mWiFiManager;
 	Multicast mMulticast;
 	TCPReceiver mTCPReceiver;
-	List<int> mConnectedNodes;
+	DeadNodesPurger mDeadNodesPurger;
+	List<uint16_t> mConnectedNodes;
 
 public:
 	Terminal();

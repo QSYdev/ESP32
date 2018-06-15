@@ -9,9 +9,9 @@ class TCPSender
 {
 
 private:
-	volatile List<WiFiClient*> mConnectedNodes;
+	List<WiFiClient*> mConnectedNodes;
 	volatile SemaphoreHandle_t mSemConnectedNodes;
-	volatile List<const qsy_packet*> mPendingTasks;
+	List<const qsy_packet*> mPendingTasks;
 	volatile SemaphoreHandle_t mSemPendingTasks;
 	volatile SemaphoreHandle_t mSemAvailableData;
 

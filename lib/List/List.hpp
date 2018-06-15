@@ -11,7 +11,7 @@ private:
 	public:
 		const int mId;
 		T mData;
-		Node* mNext;
+		volatile Node* mNext;
 
 		inline Node(int id, T data)	:mId(id), mData(data), mNext(nullptr)	{}
 		inline ~Node() { delete mNext; }
@@ -19,23 +19,23 @@ private:
 	};
 
 private:
-	Node* mFirst;
-	Node* mCurrent;
-	Node* mLast;
-	int mSize;
+	volatile Node* mFirst;
+	volatile Node* mCurrent;
+	volatile Node* mLast;
+	volatile int mSize;
 
 public:
 	inline List()	:mFirst(nullptr), mCurrent(nullptr), mLast(nullptr), mSize(0)	{}
 	inline ~List() { delete mFirst; }
 	
-	inline void add(T data) volatile
+	inline void add(T data) 
 	{
 		addById(0, data);
 	}
 
-	inline void addById(int id, T data) volatile
+	inline void addById(int id, T data) 
 	{
-		Node* nodeToAdd = new Node(id, data);
+		volatile Node* nodeToAdd = new Node(id, data);
 		if (mSize)
 		{
 			mLast->mNext = nodeToAdd;
@@ -49,10 +49,10 @@ public:
 		++mSize;
 	}
 
-	inline T removeById(int id)	volatile
+	inline T removeById(int id)	
 	{
-		Node* previous = mFirst;
-		Node* current = previous;
+		volatile Node* previous = mFirst;
+		volatile Node* current = previous;
 		T result = nullptr;
 
 		while (current != nullptr && current->mId != id)
@@ -82,10 +82,10 @@ public:
 		return result;
 	}
 
-	inline bool remove(T data) volatile
+	inline bool remove(T data) 
 	{
-		Node* previous = mFirst;
-		Node* current = previous;
+		volatile Node* previous = mFirst;
+		volatile Node* current = previous;
 
 		while (current != nullptr && current->mData != data)
 		{
@@ -115,13 +115,13 @@ public:
 		return false;
 	}
 
-	inline T removeFirst() volatile
+	inline T removeFirst() 
 	{
 		T result = nullptr;
 
 		if (mSize)
 		{
-			Node* first = mFirst;
+			volatile Node* first = mFirst;
 			result = first->mData;
 			mFirst = mFirst->mNext;
 			first->mNext = nullptr;
@@ -132,30 +132,30 @@ public:
 		return result;
 	}
 
-	inline T findById(int id) volatile
+	inline T findById(int id) 
 	{
-		Node* current = mFirst;
+		volatile Node* current = mFirst;
 
 		while (current != nullptr && current->mId != id);
 
 		return (current) ? current->mData : nullptr;
 	}
 
-	inline bool include(T data) volatile
+	inline bool include(T data) 
 	{
-		Node* current = mFirst;
+		volatile Node* current = mFirst;
 		while (current != nullptr && current->mData != data);
 
 		return (current);
 	}
 
-	inline int size() volatile const		{ return mSize; }
+	inline int size()  const		{ return mSize; }
 
-	inline void begin() volatile			{ mCurrent = mFirst; }
+	inline void begin() 			{ mCurrent = mFirst; }
 
-	inline bool end() volatile		{ return mCurrent == nullptr; }
+	inline bool end() 		{ return mCurrent == nullptr; }
 	
-	inline T next() volatile
+	inline T next() 
 	{
 		T data = mCurrent->mData;
 		mCurrent = mCurrent->mNext;

@@ -5,12 +5,6 @@ void TCPSender::NewNodeTask::execute()
 
 }
 
-TCPSender::SendCommandTask::SendCommandTask(const qsy_packet* packet)
-	:mPacket(packet)
-{
-
-}
-
 void TCPSender::SendCommandTask::execute()
 {
 

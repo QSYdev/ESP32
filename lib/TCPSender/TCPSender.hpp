@@ -29,7 +29,7 @@ private:
 	public:
 		const qsy_packet mPacket;
 
-		SendCommandTask(const qsy_packet* packet);
+		inline SendCommandTask(const qsy_packet* packet)	:mPacket(packet) {}
 		void execute() override;
 	};
 

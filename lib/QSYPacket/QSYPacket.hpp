@@ -15,6 +15,13 @@
 
 struct qsy_packet {
 	char privated[QSY_PACKET_SIZE];
+
+	inline qsy_packet(const qsy_packet* packet)
+	{
+		const char* buffer = reinterpret_cast<const char*>(packet);
+		for (int i = 0; i < QSY_PACKET_SIZE; i++)
+			privated[i] = buffer[i];
+	}
 } __attribute__ ((packed));
 
 enum packet_type {

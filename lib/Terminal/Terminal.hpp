@@ -3,6 +3,7 @@
 #include <Multicast.hpp>
 #include <TCPReceiver.hpp>
 #include <DeadNodesPurger.hpp>
+#include <TCPSender.hpp>
 #include <Observer.hpp>
 #include <List.hpp>
 

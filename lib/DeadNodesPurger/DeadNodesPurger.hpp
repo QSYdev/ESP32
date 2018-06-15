@@ -9,11 +9,11 @@ private:
 	{
 
 	public:
-		uint16_t mPhysicalId;
+		const uint16_t mPhysicalId;
 		unsigned long mLastKeepAlive;
 		uint8_t mTries;
 	
-		ListElement(uint16_t physicalId, unsigned long lastKeepAlive)	:mPhysicalId(physicalId), mLastKeepAlive(lastKeepAlive), mTries(0)	{}
+		inline ListElement(uint16_t physicalId, unsigned long lastKeepAlive)	:mPhysicalId(physicalId), mLastKeepAlive(lastKeepAlive), mTries(0)	{}
 	};
 
 private:

@@ -9,7 +9,7 @@ private:
 	{
 
 	public:
-		int mId;
+		const int mId;
 		T mData;
 		Node* mNext;
 
@@ -28,12 +28,12 @@ public:
 	inline List()	:mFirst(nullptr), mCurrent(nullptr), mLast(nullptr), mSize(0)	{}
 	inline ~List() { delete mFirst; }
 	
-	inline void add(T data)
+	inline void add(T data) volatile
 	{
 		addById(0, data);
 	}
 
-	inline void addById(int id, T data)
+	inline void addById(int id, T data) volatile
 	{
 		Node* nodeToAdd = new Node(id, data);
 		if (mSize)
@@ -49,7 +49,7 @@ public:
 		++mSize;
 	}
 
-	inline T removeById(int id)	
+	inline T removeById(int id)	volatile
 	{
 		Node* previous = mFirst;
 		Node* current = previous;
@@ -82,7 +82,7 @@ public:
 		return result;
 	}
 
-	inline bool remove(T data)
+	inline bool remove(T data) volatile
 	{
 		Node* previous = mFirst;
 		Node* current = previous;
@@ -115,9 +115,9 @@ public:
 		return false;
 	}
 
-	inline T removeFirst()
+	inline T removeFirst() volatile
 	{
-		T result;
+		T result = nullptr;
 
 		if (mSize)
 		{
@@ -132,7 +132,7 @@ public:
 		return result;
 	}
 
-	inline T findById(int id)
+	inline T findById(int id) volatile
 	{
 		Node* current = mFirst;
 
@@ -141,7 +141,7 @@ public:
 		return (current) ? current->mData : nullptr;
 	}
 
-	inline bool include(T data)
+	inline bool include(T data) volatile
 	{
 		Node* current = mFirst;
 		while (current != nullptr && current->mData != data);
@@ -149,13 +149,13 @@ public:
 		return (current);
 	}
 
-	inline int size()		{ return mSize; }
+	inline int size() volatile const		{ return mSize; }
 
-	inline void begin() 	{ mCurrent = mFirst; }
+	inline void begin() volatile			{ mCurrent = mFirst; }
 
-	inline bool end()		{ return mCurrent == nullptr; }
+	inline bool end() volatile		{ return mCurrent == nullptr; }
 	
-	inline T next()
+	inline T next() volatile
 	{
 		T data = mCurrent->mData;
 		mCurrent = mCurrent->mNext;

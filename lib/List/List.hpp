@@ -115,13 +115,30 @@ public:
 		return false;
 	}
 
+	inline T removeFirst()
+	{
+		T result;
+
+		if (mSize)
+		{
+			Node* first = mFirst;
+			result = first->mData;
+			mFirst = mFirst->mNext;
+			first->mNext = nullptr;
+			delete first;
+			--mSize;
+		}
+
+		return result;
+	}
+
 	inline T findById(int id)
 	{
 		Node* current = mFirst;
 
 		while (current != nullptr && current->mId != id);
 
-		return (current) ? current->mData : 0;
+		return (current) ? current->mData : nullptr;
 	}
 
 	inline bool include(T data)

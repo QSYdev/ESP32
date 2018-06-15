@@ -15,6 +15,7 @@ private:
 	Multicast mMulticast;
 	TCPReceiver mTCPReceiver;
 	DeadNodesPurger mDeadNodesPurger;
+	TCPSender mTCPSender;
 	List<uint16_t> mConnectedNodes;
 
 public:
@@ -23,6 +24,9 @@ public:
 	void notify(const Event* event) override;
 
 	void start();
-	void tick();
+
+private:
+	static void task0(void* args);
+	static void task1(void* args);
 
 };

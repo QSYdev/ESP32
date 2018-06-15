@@ -2,7 +2,7 @@
 #include <List.hpp>
 #include <WiFi.h>
 #include <QSYPacket.hpp>
-#include <FreeRTOS.h>
+#include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
 
 class TCPSender

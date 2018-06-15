@@ -17,8 +17,6 @@ void DeadNodesPurger::tick()
 	unsigned long timeNow = millis();
 	if (timeNow - mElapsedTime >= QSY_DEAD_NODES_PURGER_PERIOD)
 	{
-		unsigned long t = micros();
-		
 		mElapsedTime = timeNow;
 		List<uint16_t> purgedNodes;
 		mConnectedNodes.begin();
@@ -43,10 +41,6 @@ void DeadNodesPurger::tick()
 			DisconnectedNode event(purgedNodes.next());
 			notify(&event);
 		}
-
-		t = micros() - t;
-		Serial.print("DEAD NODES PURGER = ");
-		Serial.println(t);
 	}
 }
 

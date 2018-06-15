@@ -1,8 +1,10 @@
 #include <Terminal.hpp>
 #include <QSYPacket.hpp>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 Terminal::Terminal()
-	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mConnectedNodes()
+	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mTCPSender(), mConnectedNodes()
 {
 	mMulticast.setAcceptingPackets(true);
 	
@@ -31,12 +33,12 @@ void Terminal::notify(const Event* event)
 						WiFiClient* client = new WiFiClient();
 						if (client->connect(packetReceivedEvent->mIpRemote, QSY_TCP_SERVER_PORT))
 						{
-							Serial.print("NEW NODE ID = ");
 							Serial.println(physicalId);
 							client->setNoDelay(true);
 							mConnectedNodes.add(physicalId);
 							mTCPReceiver.hello(physicalId, client);
 							mDeadNodesPurger.hello(physicalId);
+							mTCPSender.hello(physicalId, client);
 						}
 						else
 						{
@@ -69,12 +71,12 @@ void Terminal::notify(const Event* event)
 		case Event::event_type::DisconnectedNode:
 		{
 			const DisconnectedNode* disconnectedNodeEvent = reinterpret_cast<const DisconnectedNode*>(event);
-			Serial.print("DISCONNECTED NODE ID = ");
 			Serial.println(disconnectedNodeEvent->mPhysicalId);
 			if (mConnectedNodes.remove(disconnectedNodeEvent->mPhysicalId))
 			{
 				mTCPReceiver.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 				mDeadNodesPurger.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
+				mTCPSender.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 			}
 			break;
 		}
@@ -83,16 +85,35 @@ void Terminal::notify(const Event* event)
 
 void Terminal::start()
 {
-	mWiFiManager.init();
-	mMulticast.init();
-	mTCPReceiver.init();
-	mDeadNodesPurger.init();
+	xTaskCreatePinnedToCore(&task0, "", 2048, this, tskIDLE_PRIORITY, NULL, 0);
+	xTaskCreatePinnedToCore(&task1, "", 2048, this, tskIDLE_PRIORITY, NULL, 1);
 }
 
-void Terminal::tick()
+void Terminal::task0(void* args)
 {
-	mWiFiManager.tick();
-	mMulticast.tick();
-	mTCPReceiver.tick();
-	mDeadNodesPurger.tick();
+	Terminal* term = reinterpret_cast<Terminal*>(args);
+
+	term->mWiFiManager.init();
+	term->mMulticast.init();
+	term->mTCPReceiver.init();
+	term->mDeadNodesPurger.init();
+
+	while(true)
+	{
+		term->mWiFiManager.tick();
+		term->mMulticast.tick();
+		term->mTCPReceiver.tick();
+		term->mDeadNodesPurger.tick();
+		vTaskDelay(1);
+	}
+}
+
+void Terminal::task1(void* args)
+{
+	Terminal* term = reinterpret_cast<Terminal*>(args);
+
+	term->mTCPSender.init();
+
+	while (true)
+		term->mTCPSender.tick();
 }

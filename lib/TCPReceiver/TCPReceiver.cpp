@@ -20,8 +20,6 @@ void TCPReceiver::tick()
 		int available = currentElement->mWiFiClient->available();
 		if (available)
 		{
-			unsigned long t = micros();
-
 			int bytesToRead = (available > currentElement->mAvailable) ? currentElement->mAvailable : available;
 			currentElement->mAvailable -= currentElement->mWiFiClient->readBytes(currentElement->mBuffer, bytesToRead);
 
@@ -30,10 +28,6 @@ void TCPReceiver::tick()
 				nodesToNotify.add(currentElement);
 				currentElement->mAvailable = QSY_PACKET_SIZE;
 			}
-
-			t = micros() - t;
-			Serial.print("TCP RECEIVER = ");
-			Serial.println(t);
 		}
 	}
 

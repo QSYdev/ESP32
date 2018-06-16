@@ -28,7 +28,6 @@ void TCPReceiver::tick()
 				nodesToNotify.add(currentElement);
 				currentElement->mAvailable = QSY_PACKET_SIZE;
 			}
-			vTaskDelay(1);
 		}
 	}
 

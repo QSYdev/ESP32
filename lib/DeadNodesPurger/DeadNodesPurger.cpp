@@ -17,6 +17,9 @@ void DeadNodesPurger::tick()
 	unsigned long timeNow = millis();
 	if (timeNow - mElapsedTime >= QSY_DEAD_NODES_PURGER_PERIOD)
 	{
+		Serial.print("SIZE DNP = ");
+		Serial.println(mConnectedNodes.size());
+
 		mElapsedTime = timeNow;
 		List<uint16_t> purgedNodes;
 		mConnectedNodes.begin();

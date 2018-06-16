@@ -4,14 +4,15 @@
 #include <freertos/task.h>
 
 Terminal::Terminal()
-	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mBluetoothReceiver(), mTCPSender(), mConnectedNodes()
+	//TODO :mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mBluetoothReceiver(), mTCPSender(), mConnectedNodes()
+	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mTCPSender(), mConnectedNodes()
 {
 	mMulticast.setAcceptingPackets(true);
 	
 	mMulticast.add(this);
 	mTCPReceiver.add(this);
 	mDeadNodesPurger.add(this);
-	mBluetoothReceiver.add(this);
+	//TODO mBluetoothReceiver.add(this);
 }
 
 void Terminal::notify(const Event* event)
@@ -34,12 +35,15 @@ void Terminal::notify(const Event* event)
 						WiFiClient* client = new WiFiClient();
 						if (client->connect(packetReceivedEvent->mIpRemote, QSY_TCP_SERVER_PORT))
 						{
+							Serial.print("C = ");
 							Serial.println(physicalId);
 							client->setNoDelay(true);
 							mConnectedNodes.add(physicalId);
 							mTCPReceiver.hello(physicalId, client);
 							mDeadNodesPurger.hello(physicalId);
 							mTCPSender.hello(physicalId, client);
+							Serial.print("SIZE = ");
+							Serial.println(mConnectedNodes.size());
 						}
 						else
 						{
@@ -72,6 +76,7 @@ void Terminal::notify(const Event* event)
 		case Event::event_type::DisconnectedNode:
 		{
 			const DisconnectedNode* disconnectedNodeEvent = reinterpret_cast<const DisconnectedNode*>(event);
+			Serial.print("D = ");
 			Serial.println(disconnectedNodeEvent->mPhysicalId);
 			if (mConnectedNodes.remove(disconnectedNodeEvent->mPhysicalId))
 			{
@@ -105,15 +110,23 @@ void Terminal::task0(void* args)
 	term->mMulticast.init();
 	term->mTCPReceiver.init();
 	term->mDeadNodesPurger.init();
-	term->mBluetoothReceiver.init();
+	//TODO term->mBluetoothReceiver.init();
 
 	while(true)
 	{
-		term->mWiFiManager.tick();
-		term->mMulticast.tick();
-		term->mTCPReceiver.tick();
-		term->mDeadNodesPurger.tick();
-		term->mBluetoothReceiver.tick();
+		try
+		{
+			term->mWiFiManager.tick();
+			term->mMulticast.tick();
+			term->mTCPReceiver.tick();
+			term->mDeadNodesPurger.tick();
+			//TODO term->mBluetoothReceiver.tick();
+		}
+		catch (...)
+		{
+
+		}
+		
 		vTaskDelay(1);
 	}
 }

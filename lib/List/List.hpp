@@ -87,13 +87,13 @@ public:
 		volatile Node* previous = mFirst;
 		volatile Node* current = previous;
 
-		while (current != nullptr && current->mData != data)
+		while (current && current->mData != data)
 		{
 			previous = current;
 			current = current->mNext;
 		}
 
-		if (current != nullptr)
+		if (current)
 		{
 			if (current == previous)
 			{
@@ -103,6 +103,7 @@ public:
 			else
 			{
 				previous->mNext = current->mNext;
+				mLast = (mLast == current) ? previous : mLast;
 			}
 
 			current->mNext = nullptr;
@@ -135,8 +136,8 @@ public:
 	inline T findById(int id) 
 	{
 		volatile Node* current = mFirst;
-
-		while (current != nullptr && current->mId != id);
+		while (current && current->mId != id)
+			current = current->mNext;
 
 		return (current) ? current->mData : nullptr;
 	}
@@ -144,7 +145,8 @@ public:
 	inline bool include(T data) 
 	{
 		volatile Node* current = mFirst;
-		while (current != nullptr && current->mData != data);
+		while (current && current->mData != data)
+			current = current->mNext;
 
 		return (current);
 	}
@@ -153,7 +155,7 @@ public:
 
 	inline void begin() 			{ mCurrent = mFirst; }
 
-	inline bool end() 		{ return mCurrent == nullptr; }
+	inline bool end() const			{ return mCurrent == nullptr; }
 	
 	inline T next() 
 	{

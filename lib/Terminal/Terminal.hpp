@@ -3,6 +3,7 @@
 #include <Multicast.hpp>
 #include <TCPReceiver.hpp>
 #include <DeadNodesPurger.hpp>
+#include <BluetoothReceiver.hpp>
 #include <TCPSender.hpp>
 #include <Observer.hpp>
 #include <List.hpp>
@@ -15,6 +16,7 @@ private:
 	Multicast mMulticast;
 	TCPReceiver mTCPReceiver;
 	DeadNodesPurger mDeadNodesPurger;
+	BluetoothReceiver mBluetoothReceiver;
 	TCPSender mTCPSender;
 	List<uint16_t> mConnectedNodes;
 

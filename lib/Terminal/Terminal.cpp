@@ -4,13 +4,14 @@
 #include <freertos/task.h>
 
 Terminal::Terminal()
-	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mTCPSender(), mConnectedNodes()
+	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mBluetoothReceiver(), mTCPSender(), mConnectedNodes()
 {
 	mMulticast.setAcceptingPackets(true);
 	
 	mMulticast.add(this);
 	mTCPReceiver.add(this);
 	mDeadNodesPurger.add(this);
+	mBluetoothReceiver.add(this);
 }
 
 void Terminal::notify(const Event* event)
@@ -80,6 +81,13 @@ void Terminal::notify(const Event* event)
 			}
 			break;
 		}
+
+		case Event::event_type::CommandReceivedFromUser:
+		{
+			const CommandReceivedFromUser* commandReceivedFromUser = reinterpret_cast<const CommandReceivedFromUser*>(event);
+			Serial.println(commandReceivedFromUser->mCommand);
+			break;
+		}
 	}
 }
 
@@ -97,6 +105,7 @@ void Terminal::task0(void* args)
 	term->mMulticast.init();
 	term->mTCPReceiver.init();
 	term->mDeadNodesPurger.init();
+	term->mBluetoothReceiver.init();
 
 	while(true)
 	{
@@ -104,6 +113,7 @@ void Terminal::task0(void* args)
 		term->mMulticast.tick();
 		term->mTCPReceiver.tick();
 		term->mDeadNodesPurger.tick();
+		term->mBluetoothReceiver.tick();
 		vTaskDelay(1);
 	}
 }

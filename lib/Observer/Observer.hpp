@@ -11,6 +11,7 @@ public:
 	{
 		PacketReceived = 0,
 		DisconnectedNode,
+		CommandReceivedFromUser,
 	};
 
 	const event_type mType;
@@ -36,6 +37,15 @@ public:
 	const uint16_t mPhysicalId;
 
 	inline DisconnectedNode(uint16_t physicalId)	:Event(event_type::DisconnectedNode), mPhysicalId(physicalId)	{}
+};
+
+class CommandReceivedFromUser : public Event
+{
+
+public:
+	const int mCommand;
+
+	inline CommandReceivedFromUser(int command)		:Event(event_type::CommandReceivedFromUser), mCommand(command) 	{}
 };
 
 class Observer

@@ -4,6 +4,7 @@
 
 #define QSY_SSID						"ESP32"
 #define QSY_PASSWORD					"123456789"
+#define QSY_BLUETOOTH					"ESP32-BLU"
 #define QSY_MAX_CONNECTIONS				8
 #define QSY_PACKET_SIZE					16
 #define QSY_MULTICAST_ADDRESS			{224, 0, 0, 12}

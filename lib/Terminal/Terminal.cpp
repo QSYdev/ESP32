@@ -110,6 +110,13 @@ void Terminal::notify(const Event* event)
 
 void Terminal::start()
 {
+	mWiFiManager.init();
+	mMulticast.init();
+	mTCPReceiver.init();
+	mDeadNodesPurger.init();
+	mBluetoothReceiver.init();
+	mTCPSender.init();
+
 	xTaskCreatePinnedToCore(&task0, "", 2048, this, 2, NULL, 0);
 	xTaskCreatePinnedToCore(&task1, "", 2048, this, 2, NULL, 1);
 }
@@ -117,13 +124,6 @@ void Terminal::start()
 void Terminal::task0(void* args)
 {
 	Terminal* term = reinterpret_cast<Terminal*>(args);
-
-	term->mWiFiManager.init();
-	term->mMulticast.init();
-	term->mTCPReceiver.init();
-	term->mDeadNodesPurger.init();
-	term->mBluetoothReceiver.init();
-
 	while(true)
 	{
 		try
@@ -145,9 +145,6 @@ void Terminal::task0(void* args)
 void Terminal::task1(void* args)
 {
 	Terminal* term = reinterpret_cast<Terminal*>(args);
-
-	term->mTCPSender.init();
-
 	while (true)
 		term->mTCPSender.tick();
 }

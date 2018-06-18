@@ -43,8 +43,6 @@ void Terminal::notify(const Event* event)
 							mTCPReceiver.hello(physicalId, client);
 							mDeadNodesPurger.hello(physicalId);
 							mTCPSender.hello(physicalId, client);
-							Serial.print("SIZE = ");
-							Serial.println(mConnectedNodes.size());
 						}
 						else
 						{
@@ -89,6 +87,7 @@ void Terminal::notify(const Event* event)
 		case Event::event_type::CommandReceivedFromUser:
 		{
 			const CommandReceivedFromUser* commandReceivedFromUser = reinterpret_cast<const CommandReceivedFromUser*>(event);
+			Serial.print("B = ");
 			Serial.println(commandReceivedFromUser->mCommand);
 			break;
 		}
@@ -99,6 +98,7 @@ void Terminal::start()
 {
 	xTaskCreatePinnedToCore(&task0, "", 2048, this, tskIDLE_PRIORITY, NULL, 0);
 	xTaskCreatePinnedToCore(&task1, "", 2048, this, tskIDLE_PRIORITY, NULL, 1);
+	xTaskCreatePinnedToCore(&task2, "", 2048, this, tskIDLE_PRIORITY, NULL, 1);
 }
 
 void Terminal::task0(void* args)
@@ -136,6 +136,32 @@ void Terminal::task1(void* args)
 
 	term->mTCPSender.init();
 
+	vTaskDelay(10000);
+	Serial.println("0");
 	while (true)
+	{
+		Serial.println("1");
 		term->mTCPSender.tick();
+	}
+}
+
+void Terminal::task2(void* args)
+{
+	Terminal* term = reinterpret_cast<Terminal*>(args);
+	vTaskDelay(5000);
+	Serial.println("2");
+	qsy_packet packet;
+	color c;
+	c.red = 0xF;
+	c.green = 0;
+	c.blue = 0;
+	packet_init(&packet);
+	packet_set_id(&packet, 19);
+	packet_set_delay(&packet, 500);
+	packet_set_color(&packet, c);
+	packet_set_type(&packet, packet_type::command);
+	packet_set_step(&packet, 1);
+	term->mTCPSender.command(&packet);
+
+	vTaskDelete(NULL);
 }

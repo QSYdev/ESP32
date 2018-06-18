@@ -16,7 +16,11 @@
 
 struct qsy_packet {
 	char privated[QSY_PACKET_SIZE];
-
+	
+	inline qsy_packet()
+	{
+	}
+	
 	inline qsy_packet(const qsy_packet* packet)
 	{
 		const char* buffer = reinterpret_cast<const char*>(packet);

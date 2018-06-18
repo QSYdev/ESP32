@@ -21,27 +21,28 @@ void DeadNodesPurger::tick()
 		Serial.println(mConnectedNodes.size());
 
 		mElapsedTime = timeNow;
-		List<uint16_t> purgedNodes;
-		mConnectedNodes.begin();
-		while (!mConnectedNodes.end())
+		std::list<uint16_t> purgedNodes;
+
+		std::map<uint16_t, ListElement*>::iterator iterator = mConnectedNodes.begin();
+		while (iterator != mConnectedNodes.end())
 		{
-			ListElement* elem = mConnectedNodes.next();
+			ListElement* elem = iterator->second;
 			if (timeNow - elem->mLastKeepAlive > QSY_MAX_ALLOWED_TIME)
 			{
 				++elem->mTries;
 				if (elem->mTries >= QSY_MAX_TRIES)
-					purgedNodes.add(elem->mPhysicalId);
+					purgedNodes.push_back(iterator->first);
 			}
 			else
 			{
 				elem->mTries = 0;
 			}
+			++iterator;
 		}
 
-		purgedNodes.begin();
-		while (!purgedNodes.end())
+		for (uint16_t physicalId : purgedNodes)
 		{
-			DisconnectedNode event(purgedNodes.next());
+			DisconnectedNode event(physicalId);
 			notify(&event);
 		}
 	}
@@ -49,7 +50,7 @@ void DeadNodesPurger::tick()
 
 void DeadNodesPurger::hello(uint16_t physicalId)
 {
-	mConnectedNodes.addById(physicalId, new ListElement(physicalId, millis()));
+	mConnectedNodes[physicalId] = new ListElement(millis());
 }
 
 void DeadNodesPurger::touche(uint16_t physicalId)
@@ -59,11 +60,12 @@ void DeadNodesPurger::touche(uint16_t physicalId)
 
 void DeadNodesPurger::keepAlive(uint16_t physicalId)
 {
-	ListElement* element = mConnectedNodes.findById(physicalId);
-	element->mLastKeepAlive = millis();
+	mConnectedNodes[physicalId]->mLastKeepAlive = millis();
 }
 
 void DeadNodesPurger::disconnectedNode(uint16_t physicalId)
 {
-	delete mConnectedNodes.removeById(physicalId);
+	ListElement* element = mConnectedNodes[physicalId];
+	mConnectedNodes.erase(physicalId);
+	delete element;
 }

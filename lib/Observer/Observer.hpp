@@ -1,5 +1,5 @@
 #pragma once
-#include <List.hpp>
+#include <list>
 #include <IPAddress.h>
 #include <QSYPacket.hpp>
 
@@ -62,7 +62,7 @@ class Observable
 {
 
 private:
-	List<Observer*> mObservers;
+	std::list<Observer*> mObservers;
 
 public:
 	Observable();

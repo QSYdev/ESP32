@@ -1,5 +1,6 @@
 #pragma once
-#include <List.hpp>
+#include <list>
+#include <map>
 #include <WiFi.h>
 #include <QSYPacket.hpp>
 #include <freertos/FreeRTOS.h>
@@ -9,9 +10,9 @@ class TCPSender
 {
 
 private:
-	List<WiFiClient*> mConnectedNodes;
+	std::map<uint16_t, WiFiClient*> mConnectedNodes;
 	volatile SemaphoreHandle_t mSemConnectedNodes;
-	List<const qsy_packet*> mPendingTasks;
+	std::list<const qsy_packet*> mPendingTasks;
 	volatile SemaphoreHandle_t mSemPendingTasks;
 	volatile SemaphoreHandle_t mSemAvailableData;
 

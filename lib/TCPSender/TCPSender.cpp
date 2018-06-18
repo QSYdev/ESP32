@@ -17,14 +17,15 @@ void TCPSender::tick()
 		xSemaphoreTake(mSemAvailableData, portTICK_PERIOD_MS);
 		xSemaphoreTake(mSemPendingTasks, portTICK_PERIOD_MS);
 		{
-			packet = mPendingTasks.removeFirst();
+			packet = mPendingTasks.front();
+			mPendingTasks.pop_front();
 		}
 		xSemaphoreGive(mSemPendingTasks);
 
 		WiFiClient* client = nullptr;
 		xSemaphoreTake(mSemConnectedNodes, portTICK_PERIOD_MS);
 		{
-			client = mConnectedNodes.findById(packet_get_id(packet));
+			client = mConnectedNodes[packet_get_id(packet)];
 		}
 		xSemaphoreGive(mSemConnectedNodes);
 
@@ -41,7 +42,7 @@ void TCPSender::hello(uint16_t physicalId, WiFiClient* node)
 {
 	xSemaphoreTake(mSemConnectedNodes, portTICK_PERIOD_MS);
 	{
-		mConnectedNodes.addById(physicalId, node);
+		mConnectedNodes[physicalId] = node;
 	}
 	xSemaphoreGive(mSemConnectedNodes);
 }
@@ -50,7 +51,7 @@ void TCPSender::command(const qsy_packet* packet)
 {
 	xSemaphoreTake(mSemPendingTasks, portTICK_PERIOD_MS);
 	{
-		mPendingTasks.add(new qsy_packet(packet));
+		mPendingTasks.push_back(new qsy_packet(packet));
 	}
 	xSemaphoreGive(mSemPendingTasks);
 	xSemaphoreGive(mSemAvailableData);
@@ -60,7 +61,7 @@ void TCPSender::disconnectedNode(uint16_t physicalId)
 {
 	xSemaphoreTake(mSemConnectedNodes, portTICK_PERIOD_MS);
 	{
-		mConnectedNodes.removeById(physicalId);
+		mConnectedNodes.erase(physicalId);
 	}
 	xSemaphoreGive(mSemConnectedNodes);
 }

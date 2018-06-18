@@ -11,7 +11,7 @@ Observable::Observable()
 
 void Observable::add(Observer* observer)
 {
-	mObservers.add(observer);
+	mObservers.push_back(observer);
 }
 
 void Observable::remove(Observer* observer)
@@ -21,7 +21,6 @@ void Observable::remove(Observer* observer)
 
 void Observable::notify(const Event* event)
 {
-	mObservers.begin();
-	while (!mObservers.end())
-		mObservers.next()->notify(event);
+	for(Observer* observer : mObservers)
+		observer->notify(event);
 }

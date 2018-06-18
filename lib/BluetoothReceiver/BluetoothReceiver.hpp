@@ -1,5 +1,4 @@
 #pragma once
-#include <List.hpp>
 #include <Observer.hpp>
 #include <BluetoothSerial.h>
 

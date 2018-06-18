@@ -1,6 +1,6 @@
 #pragma once
 #include <Observer.hpp>
-#include <List.hpp>
+#include <map>
 #include <WiFi.h>
 
 class TCPReceiver : public Observable
@@ -19,7 +19,7 @@ private:
 	};
 
 private:
-	List<ListElement*> mConnectedNodes;
+	std::map<uint16_t, ListElement*> mConnectedNodes;
 
 public:
 	TCPReceiver();

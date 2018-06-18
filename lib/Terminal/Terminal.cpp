@@ -2,6 +2,7 @@
 #include <QSYPacket.hpp>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
+#include <algorithm>
 
 Terminal::Terminal()
 	//TODO :mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mBluetoothReceiver(), mTCPSender(), mConnectedNodes()
@@ -30,7 +31,7 @@ void Terminal::notify(const Event* event)
 			{
 				case packet_type::hello:
 				{
-					if (!mConnectedNodes.include(physicalId))
+					if (std::find(mConnectedNodes.begin(), mConnectedNodes.end(), physicalId) == mConnectedNodes.end())
 					{
 						WiFiClient* client = new WiFiClient();
 						if (client->connect(packetReceivedEvent->mIpRemote, QSY_TCP_SERVER_PORT))
@@ -38,7 +39,7 @@ void Terminal::notify(const Event* event)
 							Serial.print("C = ");
 							Serial.println(physicalId);
 							client->setNoDelay(true);
-							mConnectedNodes.add(physicalId);
+							mConnectedNodes.push_back(physicalId);
 							mTCPReceiver.hello(physicalId, client);
 							mDeadNodesPurger.hello(physicalId);
 							mTCPSender.hello(physicalId, client);
@@ -78,12 +79,10 @@ void Terminal::notify(const Event* event)
 			const DisconnectedNode* disconnectedNodeEvent = reinterpret_cast<const DisconnectedNode*>(event);
 			Serial.print("D = ");
 			Serial.println(disconnectedNodeEvent->mPhysicalId);
-			if (mConnectedNodes.remove(disconnectedNodeEvent->mPhysicalId))
-			{
-				mTCPReceiver.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
-				mDeadNodesPurger.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
-				mTCPSender.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
-			}
+			mConnectedNodes.remove(disconnectedNodeEvent->mPhysicalId);
+			mTCPReceiver.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
+			mDeadNodesPurger.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
+			mTCPSender.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 			break;
 		}
 

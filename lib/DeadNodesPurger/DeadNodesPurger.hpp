@@ -1,5 +1,6 @@
 #pragma once
 #include <Observer.hpp>
+#include <map>
 
 class DeadNodesPurger : public Observable
 {
@@ -9,15 +10,14 @@ private:
 	{
 
 	public:
-		const uint16_t mPhysicalId;
 		unsigned long mLastKeepAlive;
 		uint8_t mTries;
 	
-		inline ListElement(uint16_t physicalId, unsigned long lastKeepAlive)	:mPhysicalId(physicalId), mLastKeepAlive(lastKeepAlive), mTries(0)	{}
+		inline ListElement(unsigned long lastKeepAlive)	:mLastKeepAlive(lastKeepAlive), mTries(0)	{}
 	};
 
 private:
-	List<ListElement*> mConnectedNodes;
+	std::map<uint16_t, ListElement*> mConnectedNodes;
 	unsigned long mElapsedTime;
 
 public:

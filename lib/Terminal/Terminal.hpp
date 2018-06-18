@@ -6,7 +6,7 @@
 //TODO #include <BluetoothReceiver.hpp>
 #include <TCPSender.hpp>
 #include <Observer.hpp>
-#include <List.hpp>
+#include <list>
 
 class Terminal : public Observer
 {
@@ -18,7 +18,7 @@ private:
 	DeadNodesPurger mDeadNodesPurger;
 	//TODO BluetoothReceiver mBluetoothReceiver;
 	TCPSender mTCPSender;
-	List<uint16_t> mConnectedNodes;
+	std::list<uint16_t> mConnectedNodes;
 
 public:
 	Terminal();

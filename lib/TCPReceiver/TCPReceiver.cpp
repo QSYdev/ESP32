@@ -11,12 +11,12 @@ void TCPReceiver::init()
 
 void TCPReceiver::tick()
 {
-	List<ListElement*> nodesToNotify;
+	std::list<ListElement*> nodesToNotify;
 
-	mConnectedNodes.begin();
-	while (!mConnectedNodes.end())
+	std::map<uint16_t, ListElement*>::iterator iterator = mConnectedNodes.begin();
+	while (iterator != mConnectedNodes.end())
 	{
-		ListElement* currentElement = mConnectedNodes.next();
+		ListElement* currentElement = iterator->second;
 		int available = currentElement->mWiFiClient->available();
 		if (available)
 		{
@@ -25,16 +25,15 @@ void TCPReceiver::tick()
 
 			if (!currentElement->mAvailable)
 			{
-				nodesToNotify.add(currentElement);
+				nodesToNotify.push_back(currentElement);
 				currentElement->mAvailable = QSY_PACKET_SIZE;
 			}
 		}
+		++iterator;
 	}
 
-	nodesToNotify.begin();
-	while (!nodesToNotify.end())
+	for (ListElement* element : nodesToNotify)
 	{
-		ListElement* element = nodesToNotify.next();
 		PacketReceived event(element->mWiFiClient->remoteIP(), reinterpret_cast<qsy_packet*>(element->mBuffer));
 		notify(&event);
 	}
@@ -42,15 +41,13 @@ void TCPReceiver::tick()
 
 void TCPReceiver::hello(uint16_t physicalId, WiFiClient* client)
 {
-	mConnectedNodes.addById(physicalId, new ListElement(client));
+	mConnectedNodes[physicalId] = new ListElement(client);
 }
 
 void TCPReceiver::disconnectedNode(uint16_t physicalId)
 {
-	ListElement* element = mConnectedNodes.removeById(physicalId);
-	if (element != nullptr)
-	{
-		delete element->mWiFiClient;
-		delete element;
-	}
+	ListElement* element = mConnectedNodes[physicalId];
+	mConnectedNodes.erase(physicalId);
+	delete element->mWiFiClient;
+	delete element;
 }

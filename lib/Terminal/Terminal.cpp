@@ -88,11 +88,11 @@ void Terminal::notify(const Event* event)
 			const CommandReceivedFromUser* commandReceivedFromUser = reinterpret_cast<const CommandReceivedFromUser*>(event);
 			Serial.print("B = ");
 			Serial.println(commandReceivedFromUser->mCommand);
-			if (commandReceivedFromUser->mCommand == 'r')
+			if (commandReceivedFromUser->mCommand == 'r' || commandReceivedFromUser->mCommand == 'o')
 			{
 				qsy_packet packet;
 				color c;
-				c.red = 0xF;
+				c.red = (commandReceivedFromUser->mCommand == 'r') ? 0xF : 0;
 				c.green = 0;
 				c.blue = 0;
 				packet_init(&packet);
@@ -117,8 +117,8 @@ void Terminal::start()
 	mBluetoothReceiver.init();
 	mTCPSender.init();
 
-	xTaskCreatePinnedToCore(&task0, "", 2048, this, 2, NULL, 0);
-	xTaskCreatePinnedToCore(&task1, "", 2048, this, 2, NULL, 1);
+	xTaskCreatePinnedToCore(&task0, "", 2048, this, 2, NULL, 1);
+	xTaskCreatePinnedToCore(&task1, "", 2048, this, 2, NULL, 0);
 }
 
 void Terminal::task0(void* args)

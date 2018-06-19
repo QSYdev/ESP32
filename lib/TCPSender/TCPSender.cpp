@@ -30,9 +30,7 @@ void TCPSender::tick()
 		xSemaphoreGive(mSemConnectedNodes);
 
 		if (packet && client && packet_is_valid(packet) && packet_get_type(packet) == packet_type::command)
-		{
 			client->write(reinterpret_cast<const char*>(packet), QSY_PACKET_SIZE);
-		}
 	}
 	catch (...)
 	{

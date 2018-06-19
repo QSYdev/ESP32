@@ -5,14 +5,16 @@
 #include <algorithm>
 
 Terminal::Terminal()
-	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mBluetoothReceiver(), mTCPSender(), mConnectedNodes()
+	//TODO :mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mBluetoothReceiver(), mExecutor(), mTCPSender(), mConnectedNodes()
+	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mExecutor(), mTCPSender(), mConnectedNodes()
 {
 	mMulticast.setAcceptingPackets(true);
 	
 	mMulticast.add(this);
 	mTCPReceiver.add(this);
 	mDeadNodesPurger.add(this);
-	mBluetoothReceiver.add(this);
+	//TODO mBluetoothReceiver.add(this);
+	mExecutor.add(this);
 }
 
 void Terminal::notify(const Event* event)
@@ -105,6 +107,20 @@ void Terminal::notify(const Event* event)
 			}
 			break;
 		}
+
+		case Event::CommandRequest:
+		{
+			const CommandRequest* commandRequestEvent = reinterpret_cast<const CommandRequest*>(event);
+			qsy_packet packet;
+			packet_init(&packet);
+			packet_set_id(&packet, commandRequestEvent->mId);
+			packet_set_delay(&packet, commandRequestEvent->mDelay);
+			packet_set_color(&packet, commandRequestEvent->mColor);
+			packet_set_type(&packet, packet_type::command);
+			packet_set_step(&packet, commandRequestEvent->mStep);
+			mTCPSender.command(&packet);
+			break;
+		}
 	}
 }
 
@@ -114,7 +130,8 @@ void Terminal::start()
 	mMulticast.init();
 	mTCPReceiver.init();
 	mDeadNodesPurger.init();
-	mBluetoothReceiver.init();
+	//TODO mBluetoothReceiver.init();
+	mExecutor.init();
 	mTCPSender.init();
 
 	xTaskCreatePinnedToCore(&task0, "", 2048, this, 2, NULL, 1);
@@ -132,7 +149,8 @@ void Terminal::task0(void* args)
 			term->mMulticast.tick();
 			term->mTCPReceiver.tick();
 			term->mDeadNodesPurger.tick();
-			term->mBluetoothReceiver.tick();
+			//TODO term->mBluetoothReceiver.tick();
+			term->mExecutor.tick();
 		}
 		catch (...)
 		{

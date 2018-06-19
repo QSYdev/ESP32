@@ -3,7 +3,8 @@
 #include <Multicast.hpp>
 #include <TCPReceiver.hpp>
 #include <DeadNodesPurger.hpp>
-#include <BluetoothReceiver.hpp>
+//TODO #include <BluetoothReceiver.hpp>
+#include <Executor.hpp>
 #include <TCPSender.hpp>
 #include <Observer.hpp>
 #include <list>
@@ -16,7 +17,8 @@ private:
 	Multicast mMulticast;
 	TCPReceiver mTCPReceiver;
 	DeadNodesPurger mDeadNodesPurger;
-	BluetoothReceiver mBluetoothReceiver;
+	//TODO BluetoothReceiver mBluetoothReceiver;
+	Executor mExecutor;
 	TCPSender mTCPSender;
 	std::list<uint16_t> mConnectedNodes;
 

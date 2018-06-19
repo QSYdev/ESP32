@@ -6,7 +6,7 @@
 
 Terminal::Terminal()
 	//TODO :mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mBluetoothReceiver(), mExecutor(), mTCPSender(), mConnectedNodes()
-	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mExecutor(), mTCPSender(), mConnectedNodes()
+	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mExecutor(nullptr), mTCPSender(), mConnectedNodes()
 {
 	mMulticast.setAcceptingPackets(true);
 	
@@ -14,7 +14,6 @@ Terminal::Terminal()
 	mTCPReceiver.add(this);
 	mDeadNodesPurger.add(this);
 	//TODO mBluetoothReceiver.add(this);
-	mExecutor.add(this);
 }
 
 void Terminal::notify(const Event* event)
@@ -44,6 +43,10 @@ void Terminal::notify(const Event* event)
 							mTCPReceiver.hello(physicalId, client);
 							mDeadNodesPurger.hello(physicalId);
 							mTCPSender.hello(physicalId, client);
+
+							mExecutor = new Executor();
+							mExecutor->add(this);
+							mExecutor->init();
 						}
 						else
 						{
@@ -131,7 +134,6 @@ void Terminal::start()
 	mTCPReceiver.init();
 	mDeadNodesPurger.init();
 	//TODO mBluetoothReceiver.init();
-	mExecutor.init();
 	mTCPSender.init();
 
 	xTaskCreatePinnedToCore(&task0, "", 2048, this, 2, NULL, 1);
@@ -150,7 +152,8 @@ void Terminal::task0(void* args)
 			term->mTCPReceiver.tick();
 			term->mDeadNodesPurger.tick();
 			//TODO term->mBluetoothReceiver.tick();
-			term->mExecutor.tick();
+			if (term->mExecutor)
+				term->mExecutor->tick();
 		}
 		catch (...)
 		{

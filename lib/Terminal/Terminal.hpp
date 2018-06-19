@@ -18,7 +18,7 @@ private:
 	TCPReceiver mTCPReceiver;
 	DeadNodesPurger mDeadNodesPurger;
 	//TODO BluetoothReceiver mBluetoothReceiver;
-	Executor mExecutor;
+	Executor* mExecutor;
 	TCPSender mTCPSender;
 	std::list<uint16_t> mConnectedNodes;
 

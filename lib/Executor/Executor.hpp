@@ -8,12 +8,11 @@ private:
 	class PreInit
 	{
 	private:
-		struct color mColors[2] = { {0xF, 0x0, 0x0}, {0x0, 0xF, 0x0} };
-		unsigned long mDelays[2] = {500, 150};
+		unsigned long mDelays[9] = {0, 500, 500, 500, 500, 150, 150, 150, 150};
 		
 		Executor* mExecutor;
 		unsigned long mElapsedTime;
-		uint8_t mColorIndex, mDelayIndex;
+		uint8_t mDelayIndex;
 
 	public:
 		void init(Executor* executor);

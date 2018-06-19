@@ -5,8 +5,23 @@ class Executor : public Observable
 {
 
 private:
-	unsigned long mElapsedTime;
-	int index;
+	class PreInit
+	{
+	private:
+		struct color mColors[2] = { {0xF, 0x0, 0x0}, {0x0, 0xF, 0x0} };
+		unsigned long mDelays[2] = {500, 150};
+		
+		Executor* mExecutor;
+		unsigned long mElapsedTime;
+		uint8_t mColorIndex, mDelayIndex;
+
+	public:
+		void init(Executor* executor);
+		void tick();
+	};
+
+private:
+	PreInit mPreInitTask;
 	
 public:
 	Executor();

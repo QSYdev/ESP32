@@ -2,14 +2,14 @@
 #include <Arduino.h>
 
 DeadNodesPurger::DeadNodesPurger()
-	:mConnectedNodes(), mElapsedTime(millis())
+	:mConnectedNodes(), mElapsedTime(0)
 {
 
 }
 
 void DeadNodesPurger::init()
 {
-
+	mElapsedTime = millis();
 }
 
 void DeadNodesPurger::tick()

@@ -42,6 +42,9 @@ struct color {
 	uint8_t red;
 	uint8_t green;
 	uint8_t blue;
+
+	inline color()	{}
+	inline color(uint8_t r, uint8_t g, uint8_t b)	:red(r), green(g), blue(b)	{}
 } __attribute__ ((packed));
 
 void packet_init(struct qsy_packet* packet);

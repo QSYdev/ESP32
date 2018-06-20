@@ -4,7 +4,6 @@
 DeadNodesPurger::DeadNodesPurger()
 	:mConnectedNodes(), mElapsedTime(0)
 {
-
 }
 
 void DeadNodesPurger::init()

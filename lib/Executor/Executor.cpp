@@ -1,19 +1,11 @@
 #include <Executor.hpp>
-#include <Arduino.h>
 
-Executor::Executor()
+Executor::Executor(unsigned long timeOut)
+	:mPreInitTask(this), mTimeOutTask(this, timeOut)
 {
-
 }
 
-void Executor::PreInit::init(Executor* executor)
-{
-	mExecutor = executor;
-	mElapsedTime = millis();
-	mDelayIndex = 0;
-}
-
-void Executor::PreInit::tick()
+void Executor::PreInitTask::tick()
 {
 	if (mDelayIndex > 8)
 		return;
@@ -31,18 +23,36 @@ void Executor::PreInit::tick()
 		else
 		{
 			// TODO Arranca la rutina.
+			mExecutor->mTimeOutTask.start();
 			Serial.println("Arranca la rutina");
 		}
 		mDelayIndex++;
 	}
 }
 
+void Executor::TimeOutTask::tick()
+{
+	if (!mStart || !mTimeOut)
+		return;
+
+	unsigned long timeNow = millis();
+	if (timeNow - mElapsedTime >= mTimeOut)
+	{
+		// TODO TimeOut.
+		Serial.print("TIME OUT AFTER ");
+		Serial.print(timeNow - mElapsedTime);
+		Serial.println(" SECONDS");
+		mStart = false;
+	}
+}
+
 void Executor::init()
 {
-	mPreInitTask.init(this);
+	mPreInitTask.start();
 }
 
 void Executor::tick()
 {
 	mPreInitTask.tick();
+	mTimeOutTask.tick();
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define QSY_SSID						"ESP32"
 #define QSY_PASSWORD					"123456789"
@@ -25,9 +26,7 @@ struct qsy_packet {
 	
 	inline qsy_packet(const qsy_packet* packet)
 	{
-		const char* buffer = reinterpret_cast<const char*>(packet);
-		for (int i = 0; i < QSY_PACKET_SIZE; i++)
-			privated[i] = buffer[i];
+		memcpy(privated, packet->privated, QSY_PACKET_SIZE);
 	}
 } __attribute__ ((packed));
 

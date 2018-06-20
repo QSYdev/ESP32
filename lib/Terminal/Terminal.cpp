@@ -5,8 +5,6 @@
 #include <algorithm>
 
 Terminal::Terminal()
-	//TODO :mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mBluetoothReceiver(), mExecutor(), mTCPSender(), mConnectedNodes()
-	:mWiFiManager(), mMulticast(), mTCPReceiver(), mDeadNodesPurger(), mExecutor(nullptr), mTCPSender(), mConnectedNodes()
 {
 	mMulticast.setAcceptingPackets(true);
 	
@@ -136,8 +134,9 @@ void Terminal::start()
 	//TODO mBluetoothReceiver.init();
 	mTCPSender.init();
 
-	xTaskCreatePinnedToCore(&task0, "", 2048, this, 2, NULL, 1);
-	xTaskCreatePinnedToCore(&task1, "", 2048, this, 2, NULL, 0);
+	xTaskCreatePinnedToCore(&task0, "", 2048, this, 1, NULL, 1);
+	xTaskCreatePinnedToCore(&task1, "", 2048, this, 1, NULL, 0);
+	vTaskDelete(NULL);
 }
 
 void Terminal::task0(void* args)

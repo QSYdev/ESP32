@@ -3,6 +3,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <algorithm>
+#include <CustomExecutor.hpp>
 
 Terminal::Terminal()
 {
@@ -21,13 +22,13 @@ void Terminal::notify(const Event* event)
 		case Event::event_type::PacketReceived:
 		{
 			const PacketReceived* packetReceivedEvent = reinterpret_cast<const PacketReceived*>(event);
-			if (!packet_is_valid(packetReceivedEvent->mPacket))
+			if (!packetReceivedEvent->mPacket->isValid())
 				return;
 
-			uint16_t physicalId = packet_get_id(packetReceivedEvent->mPacket);
-			switch(packet_get_type(packetReceivedEvent->mPacket))
+			uint16_t physicalId = packetReceivedEvent->mPacket->getId();
+			switch(packetReceivedEvent->mPacket->getType())
 			{
-				case packet_type::hello:
+				case QSYPacket::PacketType::Hello:
 				{
 					if (std::find(mConnectedNodes.begin(), mConnectedNodes.end(), physicalId) == mConnectedNodes.end())
 					{
@@ -50,13 +51,13 @@ void Terminal::notify(const Event* event)
 					break;
 				}
 
-				case packet_type::touche:
+				case QSYPacket::PacketType::Touche:
 				{
 					mDeadNodesPurger.touche(physicalId);
 					break;
 				}
 
-				case packet_type::keepalive:
+				case QSYPacket::PacketType::Keepalive:
 				{
 					mDeadNodesPurger.keepAlive(physicalId);
 					break;
@@ -87,34 +88,18 @@ void Terminal::notify(const Event* event)
 			const CommandReceivedFromUser* commandReceivedFromUser = reinterpret_cast<const CommandReceivedFromUser*>(event);
 			Serial.print("B = ");
 			Serial.println(commandReceivedFromUser->mCommand);
-			if (commandReceivedFromUser->mCommand == 'r' || commandReceivedFromUser->mCommand == 'o')
-			{
-				qsy_packet packet;
-				color c;
-				c.red = (commandReceivedFromUser->mCommand == 'r') ? 0xF : 0;
-				c.green = 0;
-				c.blue = 0;
-				packet_init(&packet);
-				packet_set_id(&packet, 19);
-				packet_set_delay(&packet, 500);
-				packet_set_color(&packet, c);
-				packet_set_type(&packet, packet_type::command);
-				packet_set_step(&packet, 1);
-				mTCPSender.command(&packet);
-			}
 			break;
 		}
 
 		case Event::CommandRequest:
 		{
 			const CommandRequest* commandRequestEvent = reinterpret_cast<const CommandRequest*>(event);
-			qsy_packet* packet = new qsy_packet();
-			packet_init(packet);
-			packet_set_id(packet, commandRequestEvent->mId);
-			packet_set_delay(packet, commandRequestEvent->mDelay);
-			packet_set_color(packet, commandRequestEvent->mColor);
-			packet_set_type(packet, packet_type::command);
-			packet_set_step(packet, commandRequestEvent->mStep);
+			QSYPacket* packet = new QSYPacket();
+			packet->setId(commandRequestEvent->mId);
+			packet->setDelay(commandRequestEvent->mDelay);
+			packet->setColor(commandRequestEvent->mColor);
+			packet->setType(QSYPacket::PacketType::Command);
+			packet->setStep(commandRequestEvent->mStep);
 			mTCPSender.command(packet);
 			break;
 		}

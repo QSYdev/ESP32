@@ -7,95 +7,67 @@
 #define BLUE_COMPONENT(x)  (x) >> 4  & 0xF
 #define COLOR(r,g,b) ((((r) & 0xF) << 12) | (((g) & 0xF) << 8) | (((b) & 0xF) << 4))
 
-struct qsy_packet_p {
-	char signature[3];
-	uint8_t type;
-	uint16_t id;
-	uint16_t color;
-	uint32_t delay;
-	uint16_t step;
-	uint16_t config;
-} __attribute__ ((packed));
-
-void packet_init(struct qsy_packet* packet)
+QSYPacket::QSYPacket()
 {
-	struct qsy_packet_p* p = (struct qsy_packet_p*) packet;
-	memset(p, 0, QSY_PACKET_SIZE);
-
-	p->signature[0] = 'Q';
-	p->signature[1] = 'S';
-	p->signature[2] = 'Y';
+	mSignature[0] = 'Q';
+	mSignature[1] = 'S';
+	mSignature[2] = 'Y';
 }
 
-bool packet_is_valid(const struct qsy_packet* packet)
+bool QSYPacket::isValid() const
 {
-	return packet->privated [0] == 'Q' && packet->privated [1] == 'S' &&
-	    packet->privated [2] == 'Y';
+	return mSignature[0] == 'Q' && mSignature[1] == 'S' && mSignature[2] == 'Y';
 }
 
-enum packet_type packet_get_type(const struct qsy_packet* packet)
+enum QSYPacket::PacketType QSYPacket::getType() const
 {
-	struct qsy_packet_p* p = (struct qsy_packet_p*) packet;
-	return (enum packet_type) p->type;
+	return (PacketType) mType;
 }
 
-uint16_t packet_get_id(const struct qsy_packet* packet)
+uint16_t QSYPacket::getId() const
 {
-	struct qsy_packet_p* p = (struct qsy_packet_p*) packet;
-	return (uint16_t) ntohs(p->id);
+	return (uint16_t) ntohs(mId);
 }
 
-struct color packet_get_color(const struct qsy_packet* packet)
+const Color QSYPacket::getColor() const
 {
-	struct qsy_packet_p* p = (struct qsy_packet_p*) packet;
-	struct color res;
-	uint16_t hcolor = ntohs(p->color);
-
-	res.red = RED_COMPONENT(hcolor);
-	res.green = GREEN_COMPONENT(hcolor);
-	res.blue = BLUE_COMPONENT(hcolor);
-	return res;
+	uint16_t hcolor = ntohs(mColor);
+	Color result(RED_COMPONENT(hcolor), GREEN_COMPONENT(hcolor), BLUE_COMPONENT(hcolor));
+	return result;
 }
 
-uint32_t packet_get_delay(const struct qsy_packet* packet)
+uint32_t QSYPacket::getDelay() const
 {
-	struct qsy_packet_p* p = (struct qsy_packet_p*) packet;
-	return ntohl(p->delay);
+	return ntohl(mDelay);
 }
 
-uint16_t packet_get_step(const struct qsy_packet *packet)
+uint16_t QSYPacket::getStep() const
 {
-	struct qsy_packet_p *p = (struct qsy_packet_p *) packet;
-	return ntohs(p->step);
+	return ntohs(mStep);
 }
 
-void packet_set_type(struct qsy_packet* packet, enum packet_type type)
+void QSYPacket::setType(QSYPacket::PacketType type)
 {
-	struct qsy_packet_p* p = (struct qsy_packet_p*) packet;
-	p->type = (uint8_t) type;
+	mType = (uint8_t) type;
 }
 
-void packet_set_id(struct qsy_packet* packet, uint16_t id)
+void QSYPacket::setId(uint16_t id)
 {
-	struct qsy_packet_p* p = (struct qsy_packet_p*) packet;
-	p->id = (uint16_t) htons(id);
+	mId = (uint16_t) htons(id);
 }
 
-void packet_set_color(struct qsy_packet* packet, struct color c)
+void QSYPacket::setColor(const Color& color)
 {
-	struct qsy_packet_p* p = (struct qsy_packet_p*) packet;
-	uint16_t hcolor = COLOR(c.red, c.green, c.blue);
-	p->color = htons(hcolor);
+	uint16_t hcolor = COLOR(color.mRed, color.mGreen, color.mBlue);
+	mColor = htons(hcolor);
 }
 
-void packet_set_delay(struct qsy_packet* packet, uint32_t delay)
+void QSYPacket::setDelay(uint32_t delay)
 {
-	struct qsy_packet_p* p = (struct qsy_packet_p*) packet;
-	p->delay = htonl(delay);
+	mDelay = htonl(delay);
 }
 
-void packet_set_step(struct qsy_packet *packet, uint16_t step)
+void QSYPacket::setStep(uint16_t step)
 {
-	struct qsy_packet_p *p = (struct qsy_packet_p *) packet;
-	p->step = htons(step);
+	mStep = htons(step);
 }

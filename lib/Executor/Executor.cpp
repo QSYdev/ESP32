@@ -1,6 +1,6 @@
 #include <Executor.hpp>
 
-uint32_t Executor::STEP_INDEX = 0;
+uint16_t Executor::STEP_INDEX = 0;
 
 Executor::BiMap::BiMap(std::list<uint16_t>& associationList)
 	:mPhysicalNodes(new uint16_t[associationList.size() + 1])
@@ -29,7 +29,7 @@ void Executor::PreInitTask::tick()
 		if (mDelayIndex < 8)
 		{
 			mElapsedTime = timeNow;
-			const color col((mDelayIndex == 0 || mDelayIndex == 2) ? 0xF : 0, (mDelayIndex == 4 || mDelayIndex == 6) ? 0xF : 0, 0);
+			const Color col((mDelayIndex == 0 || mDelayIndex == 2) ? 0xF : 0, (mDelayIndex == 4 || mDelayIndex == 6) ? 0xF : 0, 0);
 			mExecutor->turnAllNodes(col);
 		}
 		else
@@ -83,7 +83,7 @@ void Executor::StepTimeOutTask::tick()
 	}
 }
 
-Executor::Executor(std::list<uint16_t>& associationList, unsigned long routineTimeOut, void (*toucheEvent)(Executor*, uint16_t, uint16_t, struct color&, uint32_t), void (*stepTimeOutEvent)(Executor*, uint32_t))
+Executor::Executor(std::list<uint16_t>& associationList, unsigned long routineTimeOut, void (*toucheEvent)(Executor*, uint16_t, uint16_t, Color&, uint32_t), void (*stepTimeOutEvent)(Executor*, uint16_t))
 	:mBiMap(associationList), mTouchedNodes(new bool[associationList.size() + 1]), mPreInitTask(this), mRoutineTimeOutTask(this, routineTimeOut), mStepTimeOutTask(this), mToucheEvent(toucheEvent), mStepTimeOutEvent(stepTimeOutEvent)
 {
 }
@@ -105,7 +105,7 @@ void Executor::tick()
 	mStepTimeOutTask.tick();
 }
 
-void Executor::touche(uint16_t physicalId, uint16_t stepIndex, struct color& col, uint32_t delay)
+void Executor::touche(uint16_t physicalId, uint16_t stepIndex, Color& col, uint32_t delay)
 {
 	uint16_t logicalId = mBiMap.getLogicalId(physicalId);
 	if (logicalId && stepIndex == mStepIndex)
@@ -152,7 +152,7 @@ void Executor::prepareStep()
 		mStepTimeOutTask.start(mCurrentStep->mStepTimeOut + maxDelay, mStepIndex);
 }
 
-void Executor::turnAllNodes(const struct color& col)
+void Executor::turnAllNodes(const Color& col)
 {
 	for (uint16_t i = 1; i < mBiMap.size(); i++)
 	{
@@ -164,7 +164,7 @@ void Executor::turnAllNodes(const struct color& col)
 
 void Executor::finalizeStep()
 {
-	struct color noColor = {0, 0, 0};
+	Color noColor = {0, 0, 0};
 	for (const NodeConfiguration* nodeConfiguration : mCurrentStep->mNodeConfiguration) 
 	{
 		if (!mTouchedNodes[nodeConfiguration->mLogicalId]) 

@@ -34,7 +34,7 @@ void TCPReceiver::tick()
 
 	for (ListElement* element : nodesToNotify)
 	{
-		PacketReceived event(element->mWiFiClient->remoteIP(), reinterpret_cast<qsy_packet*>(element->mBuffer));
+		PacketReceived event(element->mWiFiClient->remoteIP(), reinterpret_cast<QSYPacket*>(element->mBuffer));
 		notify(&event);
 	}
 }

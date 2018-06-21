@@ -8,10 +8,10 @@ class NodeConfiguration
 
 public:
 	const uint16_t mLogicalId;
-	const struct color mColor;
+	const Color mColor;
 	const uint32_t mDelay;
 
-	inline NodeConfiguration(uint16_t logicalId, struct color& col, uint32_t delay)	:mLogicalId(logicalId), mColor(col), mDelay(delay)	{}
+	inline NodeConfiguration(uint16_t logicalId, Color& color, uint32_t delay)	:mLogicalId(logicalId), mColor(color), mDelay(delay)	{}
 
 };
 
@@ -37,5 +37,5 @@ public:
 	const std::string mName;
 	const std::list<const Step*> mSteps;
 
-	inline Routine(uint8_t playersCount, uint16_t nodesCount, unsigned long routineTimeOut, std::string& name, std::list<const Step*> steps)	:mPlayersCount(playersCount), mNodesCount(nodesCount), mRoutineTimeOut(routineTimeOut), mName(name), mSteps(steps)	{}
+	inline Routine(uint8_t playersCount, uint16_t nodesCount, unsigned long routineTimeOut, std::string& name, std::list<const Step*>& steps)	:mPlayersCount(playersCount), mNodesCount(nodesCount), mRoutineTimeOut(routineTimeOut), mName(name), mSteps(steps)	{}
 };

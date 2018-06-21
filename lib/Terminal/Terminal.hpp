@@ -32,6 +32,5 @@ public:
 private:
 	static void task0(void* args);
 	static void task1(void* args);
-	static void task2(void* args);
 
 };

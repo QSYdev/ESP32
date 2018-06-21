@@ -25,9 +25,9 @@ class PacketReceived : public Event
 
 public:
 	const IPAddress mIpRemote;
-	const qsy_packet* mPacket;
+	const QSYPacket* mPacket;
 
-	inline PacketReceived(const IPAddress ipRemote, const qsy_packet* packet)	:Event(event_type::PacketReceived), mIpRemote(ipRemote), mPacket(packet) {}
+	inline PacketReceived(const IPAddress ipRemote, const QSYPacket* packet)	:Event(event_type::PacketReceived), mIpRemote(ipRemote), mPacket(packet) {}
 
 };
 
@@ -54,11 +54,11 @@ class CommandRequest : public Event
 
 public:
 	const uint16_t mId;
-	const struct color& mColor;
+	const Color& mColor;
 	const uint32_t mDelay;
 	const uint16_t mStep;
 
-	inline CommandRequest(uint16_t id, const struct color& col, uint32_t delay, uint16_t step)	:Event(event_type::CommandRequest), mId(id), mColor(col), mDelay(delay), mStep(step)	{}
+	inline CommandRequest(uint16_t id, const Color& color, uint32_t delay, uint16_t step)	:Event(event_type::CommandRequest), mId(id), mColor(color), mDelay(delay), mStep(step)	{}
 
 };
 

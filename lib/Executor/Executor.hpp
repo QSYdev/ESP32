@@ -65,47 +65,52 @@ private:
 		Executor* mExecutor;
 		unsigned long mStepTimeOut;
 		unsigned long mElapsedTime;
-		uint32_t mStepIndex;
+		uint16_t mStepIndex;
 		bool mStart;
 
 	public:
 		inline StepTimeOutTask(Executor* executor)	:mExecutor(executor), mStart(false)	{}
 
-		inline void start(unsigned long stepTimeOut, uint32_t stepIndex)	{ mStart = true; mStepTimeOut = stepTimeOut; mStepIndex = stepIndex; mElapsedTime = millis(); }
+		inline void start(unsigned long stepTimeOut, uint16_t stepIndex)	{ mStart = true; mStepTimeOut = stepTimeOut; mStepIndex = stepIndex; mElapsedTime = millis(); }
 		inline void stop()	{ mStart = false; }
 		void tick();
 	};
 
 private:
-	static uint32_t STEP_INDEX;
+	static uint16_t STEP_INDEX;
 
 	BiMap mBiMap;
 	bool* mTouchedNodes;
 
 	const Step* mCurrentStep;
 	ExpressionTree* mExpressionTree;
-	uint32_t mStepIndex;
+	uint16_t mStepIndex;
 
 	PreInitTask mPreInitTask;
 	RoutineTimeOutTask mRoutineTimeOutTask;
 	StepTimeOutTask mStepTimeOutTask;
 	
-	void(*mToucheEvent)(Executor*, uint16_t, uint16_t, struct color&, uint32_t);
-	void(*mStepTimeOutEvent)(Executor*, uint32_t);
+	void(*mToucheEvent)(Executor*, uint16_t, uint16_t, Color&, uint32_t);
+	void(*mStepTimeOutEvent)(Executor*, uint16_t);
 	
 public:
-	Executor(std::list<uint16_t>& associationList, unsigned long routineTimeOut, void (*toucheEvent)(Executor*, uint16_t, uint16_t, struct color&, uint32_t), void (*stepTimeOutEvent)(Executor*, uint32_t));
+	Executor(std::list<uint16_t>& associationList, unsigned long routineTimeOut, void (*toucheEvent)(Executor*, uint16_t, uint16_t, Color&, uint32_t), void (*stepTimeOutEvent)(Executor*, uint16_t));
 	~Executor();
 	
 	void init();
 	void tick();
 
-	void touche(uint16_t physicalId, uint16_t stepIndex, struct color& col, uint32_t delay);
-	inline bool contains(uint16_t physicalId)	{ return mBiMap.contains(physicalId); }
-	void turnAllNodes(const struct color& col);
+	void touche(uint16_t physicalId, uint16_t stepIndex, Color& color, uint32_t delay);
+
+protected:
 	virtual bool hasNextStep() = 0;
 	virtual const Step* getNextStep() = 0;
+	
+private:
+	inline bool contains(uint16_t physicalId)	{ return mBiMap.contains(physicalId); }
+	void turnAllNodes(const Color& color);
 	void prepareStep();
 	void finalizeStep();
 	void finalizeRoutine(bool notify);
+
 };

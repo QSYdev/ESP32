@@ -20,96 +20,53 @@
 class Color
 {
 
-private:
+public:
 	const uint8_t mRed;
 	const uint8_t mGreen;
 	const uint8_t mBlue;
 
-public:
-	inline color()	{}
-	inline color(uint8_t red, uint8_t green, uint8_t blue)	:mRed(red), mGreen(green), mBlue(blue)	{}
+	inline Color()	:mRed(0), mGreen(0), mBlue(0)	{}
+	inline Color(uint8_t red, uint8_t green, uint8_t blue)	:mRed(red), mGreen(green), mBlue(blue)	{}
 
 } __attribute__ ((packed));
 
-class QSY_PACKET_SIZE
+class QSYPacket
 {
 
 private:
-	char signature[3];
-	uint8_t type;
-	uint16_t id;
-	uint16_t color;
-	uint32_t delay;
-	uint16_t step;
-	uint16_t config;
+	char mSignature[3];
+	uint8_t mType;
+	uint16_t mId;
+	uint16_t mColor;
+	uint32_t mDelay;
+	uint16_t mStep;
+	uint16_t mConfig;
 
 public:
 	enum class PacketType
 	{
-		hello = 0,
-		command = 1,
-		touche = 2,
-		keepalive = 3
+		Hello = 0,
+		Command = 1,
+		Touche = 2,
+		Keepalive = 3
 	};
 
 public:
 
-	QsyPacket();
+	QSYPacket();
 	
-	bool isValid();
+	bool isValid() const;
 
-	enum PacketType getType();
-	uint16_t getId();
-	Color getColor();
-	uint32_t getDelay();
-	uint16_t getStep();
+	enum PacketType getType() const;
+	uint16_t getId() const;
+	const Color getColor() const;
+	uint32_t getDelay() const;
+	uint16_t getStep() const;
 
 	void setType(enum PacketType type);
 	void setId(uint16_t id);
-	void setColor()
+	void setColor(const Color& color);
+	void setDelay(uint32_t delay);
+	void setStep(uint16_t step);
 
 } __attribute__ ((packed));
-
-struct qsy_packet {
-	char privated[QSY_PACKET_SIZE];
-	
-	inline qsy_packet()
-	{
-	}
-	
-	inline qsy_packet(const qsy_packet* packet)
-	{
-		memcpy(privated, packet->privated, QSY_PACKET_SIZE);
-	}
-} __attribute__ ((packed));
-
-enum packet_type {
-	hello = 0,
-	command = 1,
-	touche = 2,
-	keepalive = 3
-};
-
-struct color {
-	uint8_t red;
-	uint8_t green;
-	uint8_t blue;
-
-	inline color()	{}
-	inline color(uint8_t r, uint8_t g, uint8_t b)	:red(r), green(g), blue(b)	{}
-} __attribute__ ((packed));
-
-void packet_init(struct qsy_packet* packet);
-bool packet_is_valid(const struct qsy_packet* packet);
-
-enum packet_type packet_get_type(const struct qsy_packet* packet);
-uint16_t packet_get_id(const struct qsy_packet* packet);
-struct color packet_get_color(const struct qsy_packet* packet);
-uint32_t packet_get_delay(const struct qsy_packet* packet);
-uint16_t packet_get_step(const struct qsy_packet* packet);
-
-void packet_set_type(struct qsy_packet* packet, enum packet_type type);
-void packet_set_id(struct qsy_packet* packet, uint16_t id);
-void packet_set_color(struct qsy_packet* packet, struct color c);
-void packet_set_delay(struct qsy_packet* packet, uint32_t delay);
-void packet_set_step(struct qsy_packet* packet, uint16_t step);

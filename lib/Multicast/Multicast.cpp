@@ -17,7 +17,7 @@ void Multicast::tick()
 		if (mUDP.read(mPacketBuffer, QSY_PACKET_SIZE) != QSY_PACKET_SIZE)
 			return;
 			
-		qsy_packet* packet = reinterpret_cast<qsy_packet*>(mPacketBuffer);
+		QSYPacket* packet = reinterpret_cast<QSYPacket*>(mPacketBuffer);
 		PacketReceived event(mUDP.remoteIP(), packet);
 		notify(&event);
 	}

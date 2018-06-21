@@ -17,6 +17,59 @@
 #define QSY_MAX_TRIES					5
 #define QSY_DEAD_NODES_PURGER_PERIOD	1125
 
+class Color
+{
+
+private:
+	const uint8_t mRed;
+	const uint8_t mGreen;
+	const uint8_t mBlue;
+
+public:
+	inline color()	{}
+	inline color(uint8_t red, uint8_t green, uint8_t blue)	:mRed(red), mGreen(green), mBlue(blue)	{}
+
+} __attribute__ ((packed));
+
+class QSY_PACKET_SIZE
+{
+
+private:
+	char signature[3];
+	uint8_t type;
+	uint16_t id;
+	uint16_t color;
+	uint32_t delay;
+	uint16_t step;
+	uint16_t config;
+
+public:
+	enum class PacketType
+	{
+		hello = 0,
+		command = 1,
+		touche = 2,
+		keepalive = 3
+	};
+
+public:
+
+	QsyPacket();
+	
+	bool isValid();
+
+	enum PacketType getType();
+	uint16_t getId();
+	Color getColor();
+	uint32_t getDelay();
+	uint16_t getStep();
+
+	void setType(enum PacketType type);
+	void setId(uint16_t id);
+	void setColor()
+
+} __attribute__ ((packed));
+
 struct qsy_packet {
 	char privated[QSY_PACKET_SIZE];
 	

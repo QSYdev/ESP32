@@ -1,5 +1,10 @@
 #include <ExpressionTree.hpp>
 
+const int ExpressionTree::Utils::AND_INT_VALUE = -1;
+const int ExpressionTree::Utils::OR_INT_VALUE = -2;
+const int ExpressionTree::Utils::OPEN_PARENTHESIS_INT_VALUE = -3;
+const int ExpressionTree::Utils::CLOSE_PARENTHESIS_INT_VALUE = -4;
+
 ExpressionTree::ExpressionNode::ExpressionNode(int value)
 	:ExpressionNode(value, nullptr, nullptr)
 {

@@ -23,10 +23,10 @@ private:
 	class Utils
 	{
 	public:
-		static constexpr int AND_INT_VALUE = -1;
-		static constexpr int OR_INT_VALUE = -2;
-		static constexpr int OPEN_PARENTHESIS_INT_VALUE = -3;
-		static constexpr int CLOSE_PARENTHESIS_INT_VALUE = -4;
+		static const int AND_INT_VALUE;
+		static const int OR_INT_VALUE;
+		static const int OPEN_PARENTHESIS_INT_VALUE;
+		static const int CLOSE_PARENTHESIS_INT_VALUE;
 
 		static void fromInfixToPostfix(const std::string& expression, std::list<int>& queue);
 		static int getPrior(int c);

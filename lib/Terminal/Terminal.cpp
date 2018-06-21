@@ -41,10 +41,6 @@ void Terminal::notify(const Event* event)
 							mTCPReceiver.hello(physicalId, client);
 							mDeadNodesPurger.hello(physicalId);
 							mTCPSender.hello(physicalId, client);
-
-							mExecutor = new Executor(mConnectedNodes, 3000);
-							mExecutor->add(this);
-							mExecutor->init();
 						}
 						else
 						{
@@ -112,14 +108,14 @@ void Terminal::notify(const Event* event)
 		case Event::CommandRequest:
 		{
 			const CommandRequest* commandRequestEvent = reinterpret_cast<const CommandRequest*>(event);
-			qsy_packet packet;
-			packet_init(&packet);
-			packet_set_id(&packet, commandRequestEvent->mId);
-			packet_set_delay(&packet, commandRequestEvent->mDelay);
-			packet_set_color(&packet, commandRequestEvent->mColor);
-			packet_set_type(&packet, packet_type::command);
-			packet_set_step(&packet, commandRequestEvent->mStep);
-			mTCPSender.command(&packet);
+			qsy_packet* packet = new qsy_packet();
+			packet_init(packet);
+			packet_set_id(packet, commandRequestEvent->mId);
+			packet_set_delay(packet, commandRequestEvent->mDelay);
+			packet_set_color(packet, commandRequestEvent->mColor);
+			packet_set_type(packet, packet_type::command);
+			packet_set_step(packet, commandRequestEvent->mStep);
+			mTCPSender.command(packet);
 			break;
 		}
 	}

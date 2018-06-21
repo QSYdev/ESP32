@@ -38,6 +38,7 @@ private:
 		inline PreInitTask(Executor* executor) 	:mExecutor(executor), mStart(false)	{}
 
 		inline void start()		{ mStart = true; mDelayIndex = 0; mElapsedTime = millis(); }
+		inline void stop()		{ mStart = false; }
 		void tick();
 	};
 
@@ -54,6 +55,7 @@ private:
 		inline RoutineTimeOutTask(Executor* executor, unsigned long routineTimeOut)	:mExecutor(executor), mRoutineTimeOut(routineTimeOut), mStart(false)	{}
 
 		inline void start()	{ mStart = true; mElapsedTime = millis(); }
+		inline void stop()	{ mStart = false; }
 		void tick();
 	};
 

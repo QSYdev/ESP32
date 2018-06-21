@@ -29,7 +29,7 @@ void Executor::PreInitTask::tick()
 		if (mDelayIndex < 8)
 		{
 			mElapsedTime = timeNow;
-			color col((mDelayIndex == 0 || mDelayIndex == 2) ? 0xF : 0, (mDelayIndex == 4 || mDelayIndex == 6) ? 0xF : 0, 0);
+			const color col((mDelayIndex == 0 || mDelayIndex == 2) ? 0xF : 0, (mDelayIndex == 4 || mDelayIndex == 6) ? 0xF : 0, 0);
 			mExecutor->turnAllNodes(col);
 		}
 		else
@@ -37,6 +37,7 @@ void Executor::PreInitTask::tick()
 			mExecutor->turnAllNodes({0, 0, 0});
 			mExecutor->mCurrentStep = mExecutor->getNextStep();
 			mExecutor->prepareStep();
+			mExecutor->mPreInitTask.stop();
 			mExecutor->mRoutineTimeOutTask.start();
 			Serial.println("Arranca la rutina");
 		}
@@ -54,7 +55,6 @@ void Executor::RoutineTimeOutTask::tick()
 	{
 		mExecutor->finalizeRoutine(true);
 		Serial.println("RoutineTimeOut");
-		mStart = false;
 	}
 }
 
@@ -66,9 +66,20 @@ void Executor::StepTimeOutTask::tick()
 	unsigned long timeNow = millis();
 	if (timeNow - mElapsedTime >= mStepTimeOut)
 	{
-		// TODO StepTimeOut.
-		Serial.print("StepTimeOut");
-		mStart = false;
+		if (mExecutor->mStepTimeOutEvent)
+			mExecutor->mStepTimeOutEvent(mExecutor, mStepIndex);
+
+		mExecutor->finalizeStep();
+		if (mExecutor->hasNextStep() && !mExecutor->mCurrentStep->mStopOnTimeOut)
+		{
+			mExecutor->mCurrentStep = mExecutor->getNextStep();
+			mExecutor->prepareStep();
+		}
+		else 
+		{
+			mExecutor->finalizeRoutine(true);
+		}
+		Serial.println("StepTimeOut");
 	}
 }
 
@@ -79,8 +90,7 @@ Executor::Executor(std::list<uint16_t>& associationList, unsigned long routineTi
 
 Executor::~Executor()
 {
-	delete[] mTouchedNodes;
-	delete mExpressionTree;
+	finalizeRoutine(false);
 }
 
 void Executor::init()
@@ -157,8 +167,7 @@ void Executor::finalizeStep()
 	struct color noColor = {0, 0, 0};
 	for (const NodeConfiguration* nodeConfiguration : mCurrentStep->mNodeConfiguration) 
 	{
-		uint16_t logicalId = nodeConfiguration->mLogicalId;
-		if (!mTouchedNodes[logicalId]) 
+		if (!mTouchedNodes[nodeConfiguration->mLogicalId]) 
 		{
 			uint16_t physicalId = mBiMap.getPhysicalId(nodeConfiguration->mLogicalId);
 			const CommandRequest event(physicalId, noColor, 0, 0);
@@ -178,6 +187,11 @@ void Executor::finalizeRoutine(bool notify)
 {
 	turnAllNodes({0, 0, 0});
 	delete mExpressionTree;
+	mExpressionTree = nullptr;
+	delete[] mTouchedNodes;
+	mTouchedNodes = nullptr;
+	mPreInitTask.stop();
+	mRoutineTimeOutTask.stop();
 	mStepTimeOutTask.stop();
 	//TODO notify.
 	Serial.println("Rutina Finalizada.");

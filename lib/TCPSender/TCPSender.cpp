@@ -51,7 +51,7 @@ void TCPSender::command(const qsy_packet* packet)
 {
 	xSemaphoreTake(mSemPendingTasks, portMAX_DELAY);
 	{
-		mPendingTasks.push_back(new qsy_packet(packet));
+		mPendingTasks.push_back(packet);
 	}
 	xSemaphoreGive(mSemPendingTasks);
 	xSemaphoreGive(mSemAvailableData);

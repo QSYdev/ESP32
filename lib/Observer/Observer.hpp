@@ -54,11 +54,11 @@ class CommandRequest : public Event
 
 public:
 	const uint16_t mId;
-	const struct color mColor;
+	const struct color& mColor;
 	const uint32_t mDelay;
 	const uint16_t mStep;
 
-	inline CommandRequest(uint16_t id, struct color col, uint32_t delay, uint16_t step)	:Event(event_type::CommandRequest), mId(id), mColor(col), mDelay(delay), mStep(step)	{}
+	inline CommandRequest(uint16_t id, const struct color& col, uint32_t delay, uint16_t step)	:Event(event_type::CommandRequest), mId(id), mColor(col), mDelay(delay), mStep(step)	{}
 
 };
 

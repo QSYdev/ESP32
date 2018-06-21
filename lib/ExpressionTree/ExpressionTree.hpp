@@ -28,9 +28,9 @@ private:
 		static constexpr int OPEN_PARENTHESIS_INT_VALUE = -3;
 		static constexpr int CLOSE_PARENTHESIS_INT_VALUE = -4;
 
-		static void fromInfixToPostfix(std::string& expression, std::list<int>& queue);
+		static void fromInfixToPostfix(const std::string& expression, std::list<int>& queue);
 		static int getPrior(int c);
-		static void fromStringToIntArray(std::string& expression, std::list<int>& result);
+		static void fromStringToIntArray(const std::string& expression, std::list<int>& result);
 		static int fromIntBufferToInt(std::list<int>& buffer);
 
 	};
@@ -39,12 +39,12 @@ private:
 	ExpressionNode* mRoot;
 
 private:
-	bool evaluateExpression(ExpressionNode* node, bool* touchedNodes);
+	bool evaluateExpression(const ExpressionNode* node, const bool* touchedNodes);
 
 public:
-	ExpressionTree(std::string& expression);
+	ExpressionTree(const std::string& expression);
 	~ExpressionTree();
 
-	bool evaluateExpression(bool* touchedNodes);
+	bool evaluateExpression(const bool* touchedNodes);
 
 };

@@ -16,7 +16,7 @@ ExpressionTree::ExpressionNode::~ExpressionNode()
 	delete mRightNode;
 }
 
-void ExpressionTree::Utils::fromInfixToPostfix(std::string& expression, std::list<int>& queue)
+void ExpressionTree::Utils::fromInfixToPostfix(const std::string& expression, std::list<int>& queue)
 {
 	std::list<int> stack;
 	std::list<int> exp;
@@ -95,10 +95,10 @@ int ExpressionTree::Utils::getPrior(int c)
 	}
 }
 
-void ExpressionTree::Utils::fromStringToIntArray(std::string& expression, std::list<int>& result)
+void ExpressionTree::Utils::fromStringToIntArray(const std::string& expression, std::list<int>& result)
 {
 	std::list<int> number;
-	for (char& value : expression)
+	for (const char& value : expression)
 	{
 		if (value >= '0' && value <= '9')
 		{
@@ -158,7 +158,7 @@ int ExpressionTree::Utils::fromIntBufferToInt(std::list<int>& buffer)
 	return result;
 }
 
-ExpressionTree::ExpressionTree(std::string& expression)
+ExpressionTree::ExpressionTree(const std::string& expression)
 {
 	std::list<ExpressionNode*> stack;
 	std::list<int> exp;
@@ -191,12 +191,12 @@ ExpressionTree::~ExpressionTree()
 	delete mRoot;
 }
 
-bool ExpressionTree::evaluateExpression(bool* touchedNodes)
+bool ExpressionTree::evaluateExpression(const bool* touchedNodes)
 {
 	return evaluateExpression(mRoot, touchedNodes);
 }
 
-bool ExpressionTree::evaluateExpression(ExpressionNode* node, bool* touchedNodes)
+bool ExpressionTree::evaluateExpression(const ExpressionNode* node, const bool* touchedNodes)
 {
 	if (node->isLeaf())
 	{

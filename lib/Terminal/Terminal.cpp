@@ -42,7 +42,7 @@ void Terminal::notify(const Event* event)
 							mDeadNodesPurger.hello(physicalId);
 							mTCPSender.hello(physicalId, client);
 
-							mExecutor = new Executor(3000);
+							mExecutor = new Executor(mConnectedNodes, 3000);
 							mExecutor->add(this);
 							mExecutor->init();
 						}

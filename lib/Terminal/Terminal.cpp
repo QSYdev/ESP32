@@ -20,7 +20,7 @@ void Terminal::notify(const Event* event)
 {
 	switch(event->mType)
 	{
-		case Event::event_type::PacketReceived:
+		case Event::EventType::PacketReceived:
 		{
 			const PacketReceived* packetReceivedEvent = reinterpret_cast<const PacketReceived*>(event);
 			if (!packetReceivedEvent->mPacket->isValid())
@@ -98,7 +98,7 @@ void Terminal::notify(const Event* event)
 			break;
 		}
 
-		case Event::event_type::DisconnectedNode:
+		case Event::EventType::DisconnectedNode:
 		{
 			const DisconnectedNode* disconnectedNodeEvent = reinterpret_cast<const DisconnectedNode*>(event);
 			Serial.print("D = ");
@@ -110,7 +110,7 @@ void Terminal::notify(const Event* event)
 			break;
 		}
 
-		case Event::event_type::CommandReceivedFromUser:
+		case Event::EventType::CommandReceivedFromUser:
 		{
 			const CommandReceivedFromUser* commandReceivedFromUser = reinterpret_cast<const CommandReceivedFromUser*>(event);
 			Serial.print("B = ");
@@ -118,7 +118,7 @@ void Terminal::notify(const Event* event)
 			break;
 		}
 
-		case Event::CommandRequest:
+		case Event::EventType::CommandRequest:
 		{
 			const CommandRequest* commandRequestEvent = reinterpret_cast<const CommandRequest*>(event);
 			QSYPacket* packet = new QSYPacket();

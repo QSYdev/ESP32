@@ -3,8 +3,6 @@
 #include <map>
 #include <WiFi.h>
 #include <QSYPacket.hpp>
-#include <freertos/FreeRTOS.h>
-#include <freertos/semphr.h>
 
 class TCPSender
 {

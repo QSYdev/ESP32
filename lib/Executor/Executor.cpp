@@ -1,4 +1,5 @@
 #include <Executor.hpp>
+#include <Arduino.h>
 
 uint16_t Executor::STEP_INDEX = 0;
 
@@ -17,6 +18,13 @@ Executor::BiMap::BiMap(std::list<uint16_t>& associationList)
 Executor::BiMap::~BiMap()
 {
 	delete[] mPhysicalNodes;
+}
+
+void Executor::PreInitTask::start()
+{ 
+	mStart = true;
+	mDelayIndex = 0;
+	mElapsedTime = millis(); 
 }
 
 void Executor::PreInitTask::tick()
@@ -53,6 +61,12 @@ void Executor::PreInitTask::tick()
 	}
 }
 
+void Executor::RoutineTimeOutTask::start()
+{ 
+	mStart = true; 
+	mElapsedTime = millis(); 
+}
+
 void Executor::RoutineTimeOutTask::tick()
 {
 	if (!mStart || !mRoutineTimeOut)
@@ -64,6 +78,14 @@ void Executor::RoutineTimeOutTask::tick()
 		mExecutor->finalizeRoutine(true);
 		Serial.println("RoutineTimeOut");
 	}
+}
+
+void Executor::StepTimeOutTask::start(unsigned long stepTimeOut, uint16_t stepIndex)
+{ 
+	mStart = true; 
+	mStepTimeOut = stepTimeOut; 
+	mStepIndex = stepIndex; 
+	mElapsedTime = millis(); 
 }
 
 void Executor::StepTimeOutTask::tick()

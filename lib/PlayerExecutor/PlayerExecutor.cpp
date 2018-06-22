@@ -1,7 +1,7 @@
 #include <PlayerExecutor.hpp>
 #include <sstream>
 
-PlayerExecutor::PlayerExecutor(std::list<uint16_t>& associationList, const std::list<const Color>& playersAndColors, bool waitForAllPlayers, unsigned long stepTimeOut, unsigned long stepDelay, uint16_t stepsCount, bool stopOnStepTimeOut, unsigned long executionTimeOut)
+PlayerExecutor::PlayerExecutor(std::list<uint16_t>& associationList, std::list<Color>& playersAndColors, bool waitForAllPlayers, unsigned long stepTimeOut, unsigned long stepDelay, uint16_t stepsCount, bool stopOnStepTimeOut, unsigned long executionTimeOut)
 	:Executor(associationList, executionTimeOut, &toucheEvent, &stepTimeOutEvent), mPlayersAndColors(playersAndColors), mWaitForAllPlayers(waitForAllPlayers), mStepTimeOut(stepTimeOut), mStepDelay(stepDelay), mStepsCount(stepsCount), mStopOnStepTimeOut(stopOnStepTimeOut), mNodesCount(associationList.size()), mStepIndex(0), mLastCreatedStep(nullptr)
 {
 	srand(time(NULL));

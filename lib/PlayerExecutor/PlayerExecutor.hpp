@@ -1,12 +1,12 @@
 #pragma once
 #include <Executor.hpp>
-#include <QSYPacket.hpp>
+#include <list>
 
 class PlayerExecutor : public Executor
 {
 
 private:
-	std::list<const Color> mPlayersAndColors;
+	std::list<Color> mPlayersAndColors;
 	const bool mWaitForAllPlayers;
 	const unsigned long mStepTimeOut;
 	const unsigned long mStepDelay;
@@ -18,7 +18,7 @@ private:
 	Step* mLastCreatedStep;
 	
 public:
-	PlayerExecutor(std::list<uint16_t>& associationList, const std::list<const Color>& playersAndColors, bool waitForAllPlayers, unsigned long stepTimeOut, unsigned long stepDelay, uint16_t stepsCount, bool stopOnStepTimeOut, unsigned long executionTimeOut);
+	PlayerExecutor(std::list<uint16_t>& associationList, std::list<Color>& playersAndColors, bool waitForAllPlayers, unsigned long stepTimeOut, unsigned long stepDelay, uint16_t stepsCount, bool stopOnStepTimeOut, unsigned long executionTimeOut);
 	~PlayerExecutor();
 
 protected:

@@ -13,7 +13,7 @@ Terminal::Terminal()
 	mMulticast.add(this);
 	mTCPReceiver.add(this);
 	mDeadNodesPurger.add(this);
-	//TODO mBluetoothReceiver.add(this);
+	mBluetoothReceiver.add(this);
 }
 
 void Terminal::notify(const Event* event)
@@ -139,7 +139,7 @@ void Terminal::start()
 	mMulticast.init();
 	mTCPReceiver.init();
 	mDeadNodesPurger.init();
-	//TODO mBluetoothReceiver.init();
+	mBluetoothReceiver.init();
 	mTCPSender.init();
 
 	xTaskCreatePinnedToCore(&task0, "", 2048, this, 1, NULL, 1);
@@ -158,7 +158,7 @@ void Terminal::task0(void* args)
 			term->mMulticast.tick();
 			term->mTCPReceiver.tick();
 			term->mDeadNodesPurger.tick();
-			//TODO term->mBluetoothReceiver.tick();
+			term->mBluetoothReceiver.tick();
 			if (term->mExecutor)
 				term->mExecutor->tick();
 		}

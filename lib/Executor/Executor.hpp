@@ -3,7 +3,6 @@
 #include <map>
 #include <ExpressionTree.hpp>
 #include <Routine.hpp>
-#include <Arduino.h>
 
 class Executor : public Observable
 {
@@ -37,7 +36,7 @@ private:
 	public:
 		inline PreInitTask(Executor* executor) 	:mExecutor(executor), mStart(false)	{}
 
-		inline void start()		{ mStart = true; mDelayIndex = 0; mElapsedTime = millis(); }
+		void start();
 		inline void stop()		{ mStart = false; }
 		void tick();
 	};
@@ -54,7 +53,7 @@ private:
 	public:
 		inline RoutineTimeOutTask(Executor* executor, unsigned long routineTimeOut)	:mExecutor(executor), mRoutineTimeOut(routineTimeOut), mStart(false)	{}
 
-		inline void start()	{ mStart = true; mElapsedTime = millis(); }
+		void start();
 		inline void stop()	{ mStart = false; }
 		void tick();
 	};
@@ -71,7 +70,7 @@ private:
 	public:
 		inline StepTimeOutTask(Executor* executor)	:mExecutor(executor), mStart(false)	{}
 
-		inline void start(unsigned long stepTimeOut, uint16_t stepIndex)	{ mStart = true; mStepTimeOut = stepTimeOut; mStepIndex = stepIndex; mElapsedTime = millis(); }
+		void start(unsigned long stepTimeOut, uint16_t stepIndex);
 		inline void stop()	{ mStart = false; }
 		void tick();
 	};

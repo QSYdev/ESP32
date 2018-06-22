@@ -10,7 +10,7 @@ private:
 	std::list<const Step*>::const_iterator mIterator;
 
 public:
-	CustomExecutor(const Routine* routine, std::list<uint16_t>& associationList);
+	CustomExecutor(std::list<uint16_t>& associationList, const Routine* routine);
 	~CustomExecutor();
 
 protected:
@@ -18,7 +18,7 @@ protected:
 	const Step* getNextStep() override;
 
 private:
-	static void toucheEvent(Executor* executor, uint16_t physicalId, uint16_t stepIndex, Color& col, uint32_t delay);
+	static void toucheEvent(Executor* executor, uint16_t physicalId, uint16_t stepIndex, const Color& color, uint32_t delay);
 	static void stepTimeOutEvent(Executor* executor, uint16_t stepIndex);
 
 };

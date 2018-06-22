@@ -91,7 +91,7 @@ void Executor::StepTimeOutTask::tick()
 	}
 }
 
-Executor::Executor(std::list<uint16_t>& associationList, unsigned long routineTimeOut, void (*toucheEvent)(Executor*, uint16_t, uint16_t, Color&, uint32_t), void (*stepTimeOutEvent)(Executor*, uint16_t))
+Executor::Executor(std::list<uint16_t>& associationList, unsigned long routineTimeOut, void (*toucheEvent)(Executor*, uint16_t, uint16_t, const Color&, uint32_t), void (*stepTimeOutEvent)(Executor*, uint16_t))
 	:mBiMap(associationList), mTouchedNodes(new bool[associationList.size() + 1]), mExpressionTree(nullptr), mPreInitTask(this), mRoutineTimeOutTask(this, routineTimeOut), mStepTimeOutTask(this), mToucheEvent(toucheEvent), mStepTimeOutEvent(stepTimeOutEvent)
 {
 	memset(mTouchedNodes, 0, associationList.size() + 1);
@@ -114,13 +114,13 @@ void Executor::tick()
 	mStepTimeOutTask.tick();
 }
 
-void Executor::touche(uint16_t physicalId, uint16_t stepIndex, Color& col, uint32_t delay)
+void Executor::touche(uint16_t physicalId, uint16_t stepIndex, const Color& color, uint32_t delay)
 {
 	uint16_t logicalId = mBiMap.getLogicalId(physicalId);
 	if (logicalId && stepIndex == mStepIndex)
 	{
 		if (mToucheEvent)
-			mToucheEvent(this, physicalId, stepIndex, col, delay);
+			mToucheEvent(this, physicalId, stepIndex, color, delay);
 
 		mTouchedNodes[logicalId] = true;
 		if (mExpressionTree->evaluateExpression(mTouchedNodes))

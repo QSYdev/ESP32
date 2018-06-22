@@ -90,17 +90,17 @@ private:
 	RoutineTimeOutTask mRoutineTimeOutTask;
 	StepTimeOutTask mStepTimeOutTask;
 	
-	void(*mToucheEvent)(Executor*, uint16_t, uint16_t, Color&, uint32_t);
+	void(*mToucheEvent)(Executor*, uint16_t, uint16_t, const Color&, uint32_t);
 	void(*mStepTimeOutEvent)(Executor*, uint16_t);
 	
 public:
-	Executor(std::list<uint16_t>& associationList, unsigned long routineTimeOut, void (*toucheEvent)(Executor*, uint16_t, uint16_t, Color&, uint32_t), void (*stepTimeOutEvent)(Executor*, uint16_t));
+	Executor(std::list<uint16_t>& associationList, unsigned long routineTimeOut, void (*toucheEvent)(Executor*, uint16_t, uint16_t, const Color&, uint32_t), void (*stepTimeOutEvent)(Executor*, uint16_t));
 	~Executor();
 	
 	void init();
 	void tick();
 
-	void touche(uint16_t physicalId, uint16_t stepIndex, Color& color, uint32_t delay);
+	void touche(uint16_t physicalId, uint16_t stepIndex, const Color& color, uint32_t delay);
 
 protected:
 	virtual bool hasNextStep() = 0;

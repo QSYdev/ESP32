@@ -4,6 +4,7 @@
 #include <freertos/task.h>
 #include <algorithm>
 #include <CustomExecutor.hpp>
+#include <PlayerExecutor.hpp>
 
 Terminal::Terminal()
 {
@@ -64,7 +65,7 @@ void Terminal::notify(const Event* event)
 									steps.push_back(new Step("1&2", 2000, false, nodeConfiguration));	
 								}
 								const Routine* routine = new Routine(1, 1, 0, "Rutina", steps);
-								mExecutor = new CustomExecutor(routine, mConnectedNodes);
+								mExecutor = new CustomExecutor(mConnectedNodes, routine);
 								mExecutor->add(this);
 								mExecutor->init();
 							}

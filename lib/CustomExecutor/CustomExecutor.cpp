@@ -1,6 +1,6 @@
 #include <CustomExecutor.hpp>
 
-CustomExecutor::CustomExecutor(const Routine* routine, std::list<uint16_t>& associationList)
+CustomExecutor::CustomExecutor(std::list<uint16_t>& associationList, const Routine* routine)
 	:Executor(associationList, routine->mRoutineTimeOut, &toucheEvent, &stepTimeOutEvent), mRoutine(routine), mIterator(routine->mSteps.begin())
 {
 }
@@ -22,7 +22,7 @@ const Step* CustomExecutor::getNextStep()
 	return currentStep;
 }
 
-void CustomExecutor::toucheEvent(Executor* executor, uint16_t physicalId, uint16_t stepIndex, Color& col, uint32_t delay)
+void CustomExecutor::toucheEvent(Executor* executor, uint16_t physicalId, uint16_t stepIndex, const Color& color, uint32_t delay)
 {
 
 }

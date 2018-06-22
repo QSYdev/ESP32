@@ -49,25 +49,21 @@ void Terminal::notify(const Event* event)
 								{
 									std::list<const NodeConfiguration*> nodeConfiguration;
 									nodeConfiguration.push_back(new NodeConfiguration(1, {0, 0, 0xF}, 500));
-									std::string expression = "1";
-									steps.push_back(new Step(expression, 2000, false, nodeConfiguration));
+									steps.push_back(new Step("1", 2000, false, nodeConfiguration));
 								}
 								{
 									std::list<const NodeConfiguration*> nodeConfiguration;
 									nodeConfiguration.push_back(new NodeConfiguration(2, {0, 0xF, 0xF}, 500));
-									std::string expression = "2";
-									steps.push_back(new Step(expression, 2000, false, nodeConfiguration));	
+									steps.push_back(new Step("2", 2000, false, nodeConfiguration));	
 								}
 								{
 									std::list<const NodeConfiguration*> nodeConfiguration;
 									nodeConfiguration.push_back(new NodeConfiguration(1, {0xF, 0xF, 0xF}, 500));
 									nodeConfiguration.push_back(new NodeConfiguration(2, {0x0, 0xF, 0xF}, 500));
 									
-									std::string expression = "1&2";
-									steps.push_back(new Step(expression, 2000, false, nodeConfiguration));	
+									steps.push_back(new Step("1&2", 2000, false, nodeConfiguration));	
 								}
-								std::string name = "Rutina";
-								const Routine* routine = new Routine(1, 1, 0, name, steps);
+								const Routine* routine = new Routine(1, 1, 0, "Rutina", steps);
 								mExecutor = new CustomExecutor(routine, mConnectedNodes);
 								mExecutor->add(this);
 								mExecutor->init();

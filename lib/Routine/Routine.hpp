@@ -11,7 +11,7 @@ public:
 	const Color mColor;
 	const uint32_t mDelay;
 
-	inline NodeConfiguration(uint16_t logicalId, Color& color, uint32_t delay)	:mLogicalId(logicalId), mColor(color), mDelay(delay)	{}
+	inline NodeConfiguration(uint16_t logicalId, const Color& color, uint32_t delay)	:mLogicalId(logicalId), mColor(color), mDelay(delay)	{}
 
 };
 

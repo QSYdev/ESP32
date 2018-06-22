@@ -10,6 +10,7 @@ Executor::BiMap::BiMap(std::list<uint16_t>& associationList)
 	{
 		mPhysicalNodes[i] = physicalId;
 		mLogicalNodes[physicalId] = i;
+		i++;
 	}
 }
 
@@ -35,11 +36,18 @@ void Executor::PreInitTask::tick()
 		else
 		{
 			mExecutor->turnAllNodes({0, 0, 0});
-			mExecutor->mCurrentStep = mExecutor->getNextStep();
-			mExecutor->prepareStep();
-			mExecutor->mPreInitTask.stop();
-			mExecutor->mRoutineTimeOutTask.start();
 			Serial.println("Arranca la rutina");
+			if (mExecutor->hasNextStep())
+			{
+				mExecutor->mCurrentStep = mExecutor->getNextStep();
+				mExecutor->prepareStep();
+				mExecutor->mPreInitTask.stop();
+				mExecutor->mRoutineTimeOutTask.start();
+			}
+			else
+			{
+				mExecutor->finalizeRoutine(false);
+			}
 		}
 		mDelayIndex++;
 	}
@@ -69,6 +77,7 @@ void Executor::StepTimeOutTask::tick()
 		if (mExecutor->mStepTimeOutEvent)
 			mExecutor->mStepTimeOutEvent(mExecutor, mStepIndex);
 
+		Serial.println("StepTimeOut");
 		mExecutor->finalizeStep();
 		if (mExecutor->hasNextStep() && !mExecutor->mCurrentStep->mStopOnTimeOut)
 		{
@@ -79,13 +88,13 @@ void Executor::StepTimeOutTask::tick()
 		{
 			mExecutor->finalizeRoutine(true);
 		}
-		Serial.println("StepTimeOut");
 	}
 }
 
 Executor::Executor(std::list<uint16_t>& associationList, unsigned long routineTimeOut, void (*toucheEvent)(Executor*, uint16_t, uint16_t, Color&, uint32_t), void (*stepTimeOutEvent)(Executor*, uint16_t))
-	:mBiMap(associationList), mTouchedNodes(new bool[associationList.size() + 1]), mPreInitTask(this), mRoutineTimeOutTask(this, routineTimeOut), mStepTimeOutTask(this), mToucheEvent(toucheEvent), mStepTimeOutEvent(stepTimeOutEvent)
+	:mBiMap(associationList), mTouchedNodes(new bool[associationList.size() + 1]), mExpressionTree(nullptr), mPreInitTask(this), mRoutineTimeOutTask(this, routineTimeOut), mStepTimeOutTask(this), mToucheEvent(toucheEvent), mStepTimeOutEvent(stepTimeOutEvent)
 {
+	memset(mTouchedNodes, 0, associationList.size() + 1);
 }
 
 Executor::~Executor()
@@ -154,9 +163,9 @@ void Executor::prepareStep()
 
 void Executor::turnAllNodes(const Color& col)
 {
-	for (uint16_t i = 1; i < mBiMap.size(); i++)
+	for (uint16_t i = 0; i < mBiMap.size(); i++)
 	{
-		uint16_t physicalId = mBiMap.getPhysicalId(i);
+		uint16_t physicalId = mBiMap.getPhysicalId(i + 1);
 		const CommandRequest event(physicalId, col, 0, 0);
 		notify(&event);
 	}
@@ -164,7 +173,7 @@ void Executor::turnAllNodes(const Color& col)
 
 void Executor::finalizeStep()
 {
-	Color noColor = {0, 0, 0};
+	const Color noColor = {0, 0, 0};
 	for (const NodeConfiguration* nodeConfiguration : mCurrentStep->mNodeConfiguration) 
 	{
 		if (!mTouchedNodes[nodeConfiguration->mLogicalId]) 
@@ -175,8 +184,7 @@ void Executor::finalizeStep()
 		}
 	}
 
-	for (int i = 0; i < mBiMap.size(); i++)
-		mTouchedNodes[i] = false;
+	memset(mTouchedNodes, 0, mBiMap.size() + 1);
 
 	mStepTimeOutTask.stop();
 	delete mExpressionTree;

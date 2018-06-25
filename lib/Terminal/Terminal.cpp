@@ -44,6 +44,7 @@ void Terminal::notify(const Event* event)
 							mDeadNodesPurger.hello(physicalId);
 							mTCPSender.hello(physicalId, client);
 
+							/*
 							if (mConnectedNodes.size() == 2)
 							{
 								std::list<const Step*> steps;
@@ -69,6 +70,7 @@ void Terminal::notify(const Event* event)
 								mExecutor->add(this);
 								mExecutor->init();
 							}
+							*/
 						}
 						else
 						{

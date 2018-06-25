@@ -54,7 +54,7 @@ class CommandRequest : public Event
 
 public:
 	const uint16_t mId;
-	const Color& mColor;
+	const Color mColor;
 	const uint32_t mDelay;
 	const uint16_t mStep;
 

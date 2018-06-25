@@ -38,7 +38,27 @@ private:
 
 	};
 
+	class SendCommand : public BLECallback
+	{
+	private:
+		SemaphoreHandle_t mMutex;
+		char mBuffer[QSY_PACKET_SIZE];
+		uint8_t mWritePos;
+		bool mReadyToRead;
+		unsigned long mLastTimeReceived;
+
+	public:
+		inline SendCommand(BluetoothReceiver* bluetooth, BLECharacteristic* characteristic)	
+			:BLECallback(bluetooth, characteristic), mMutex(xSemaphoreCreateMutex), mWritePos(0), mReadyToRead(false), mLastTimeReceived(millis())
+		{
+		}
+
+		void onWrite(BLECharacteristic* pCharacteristic) override;
+		const QSYPacket* tick();
+	};
+
 	GetConnectedNodes* mGetConnectedNodes;
+	SendCommand* mSendCommand;
 
 public:
 	BluetoothReceiver();

@@ -43,7 +43,7 @@ private:
 	uint16_t mConfig;
 
 public:
-	enum class PacketType
+	enum PacketType
 	{
 		Hello = 0,
 		Command = 1,

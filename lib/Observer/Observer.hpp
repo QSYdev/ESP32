@@ -7,7 +7,7 @@ class Event
 {
 
 public:
-	enum event_type
+	enum EventType
 	{
 		PacketReceived = 0,
 		DisconnectedNode,
@@ -15,8 +15,8 @@ public:
 		CommandRequest
 	};
 
-	const event_type mType;
-	inline Event(const event_type type)	:mType(type) {}
+	const EventType mType;
+	inline Event(const EventType type)	:mType(type) {}
 
 };
 
@@ -27,7 +27,7 @@ public:
 	const IPAddress mIpRemote;
 	const QSYPacket* mPacket;
 
-	inline PacketReceived(const IPAddress ipRemote, const QSYPacket* packet)	:Event(event_type::PacketReceived), mIpRemote(ipRemote), mPacket(packet) {}
+	inline PacketReceived(const IPAddress ipRemote, const QSYPacket* packet)	:Event(EventType::PacketReceived), mIpRemote(ipRemote), mPacket(packet) {}
 
 };
 
@@ -37,7 +37,7 @@ class DisconnectedNode : public Event
 public:
 	const uint16_t mPhysicalId;
 
-	inline DisconnectedNode(uint16_t physicalId)	:Event(event_type::DisconnectedNode), mPhysicalId(physicalId)	{}
+	inline DisconnectedNode(uint16_t physicalId)	:Event(EventType::DisconnectedNode), mPhysicalId(physicalId)	{}
 };
 
 class CommandReceivedFromUser : public Event
@@ -46,7 +46,7 @@ class CommandReceivedFromUser : public Event
 public:
 	const int mCommand;
 
-	inline CommandReceivedFromUser(int command)		:Event(event_type::CommandReceivedFromUser), mCommand(command) 	{}
+	inline CommandReceivedFromUser(int command)		:Event(EventType::CommandReceivedFromUser), mCommand(command) 	{}
 };
 
 class CommandRequest : public Event
@@ -58,7 +58,7 @@ public:
 	const uint32_t mDelay;
 	const uint16_t mStep;
 
-	inline CommandRequest(uint16_t id, const Color& color, uint32_t delay, uint16_t step)	:Event(event_type::CommandRequest), mId(id), mColor(color), mDelay(delay), mStep(step)	{}
+	inline CommandRequest(uint16_t id, const Color& color, uint32_t delay, uint16_t step)	:Event(EventType::CommandRequest), mId(id), mColor(color), mDelay(delay), mStep(step)	{}
 
 };
 

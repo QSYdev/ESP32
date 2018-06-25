@@ -4,6 +4,7 @@
 #include <BLEUtils.h>
 #include <BLEServer.h>
 #include <list>
+#include <Arduino.h>
 
 class BluetoothReceiver : public Observable
 {
@@ -49,7 +50,7 @@ private:
 
 	public:
 		inline SendCommand(BluetoothReceiver* bluetooth, BLECharacteristic* characteristic)	
-			:BLECallback(bluetooth, characteristic), mMutex(xSemaphoreCreateMutex), mWritePos(0), mReadyToRead(false), mLastTimeReceived(millis())
+			:BLECallback(bluetooth, characteristic), mMutex(xSemaphoreCreateMutex()), mWritePos(0), mReadyToRead(false), mLastTimeReceived(millis())
 		{
 		}
 

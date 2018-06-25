@@ -42,6 +42,7 @@ void Terminal::notify(const Event* event)
 							mConnectedNodes.push_back(physicalId);
 							mTCPReceiver.hello(physicalId, client);
 							mDeadNodesPurger.hello(physicalId);
+							mBluetoothReceiver.hello(physicalId);
 							mTCPSender.hello(physicalId, client);
 
 							/*
@@ -108,6 +109,7 @@ void Terminal::notify(const Event* event)
 			mConnectedNodes.remove(disconnectedNodeEvent->mPhysicalId);
 			mTCPReceiver.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 			mDeadNodesPurger.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
+			mBluetoothReceiver.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 			mTCPSender.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 			break;
 		}

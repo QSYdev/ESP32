@@ -9,27 +9,44 @@ class BluetoothReceiver : public Observable
 {
 
 private:
-	class MyCallbacks: public BLECharacteristicCallbacks
+	class BLECallback : public BLECharacteristicCallbacks
 	{
-	private:
+	protected:
 		BluetoothReceiver* mBluetooth;
+		BLECharacteristic* mCharacteristic;
 
-    public:
-		inline MyCallbacks(BluetoothReceiver* bluetooth)	:mBluetooth(bluetooth)	{}
-		
-		void onWrite(BLECharacteristic* pCharacteristic) override;
-	
+	public:
+		inline BLECallback(BluetoothReceiver* bluetooth, BLECharacteristic* characteristic)	:mBluetooth(bluetooth), mCharacteristic(characteristic)	{}
+		inline ~BLECallback()	{ delete mCharacteristic; }
 	};
 
-	volatile SemaphoreHandle_t mMutexBuffer;
-	volatile char mBuffer[64];
-	volatile uint8_t mReadPos;
-	volatile uint8_t mWritePos;
+	class GetConnectedNodes : public BLECallback
+	{
+	private:
+		SemaphoreHandle_t mMutex;
+		uint16_t mValue;
+
+	public:
+		inline GetConnectedNodes(BluetoothReceiver* bluetooth, BLECharacteristic* characteristic)	
+			:BLECallback(bluetooth, characteristic), mMutex(xSemaphoreCreateMutex()), mValue(0)
+		{
+		}
+
+		void onRead(BLECharacteristic* pCharacteristic) override;
+		void hello(uint16_t physicalId);
+		void disconnectedNode(uint16_t physicalId);
+
+	};
+
+	GetConnectedNodes* mGetConnectedNodes;
 
 public:
 	BluetoothReceiver();
 
 	void init();
 	void tick();
+
+	void hello(uint16_t physicalId);
+	void disconnectedNode(uint16_t phyisicalId);
 	
 };

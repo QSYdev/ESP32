@@ -2,7 +2,7 @@
 #include <QSYPacket.hpp>
 
 BluetoothReceiver::BluetoothReceiver()
-	:mMutexBuffer(xSemaphoreCreateMutex()), mReadPos(0), mWritePos(0)
+	:mGetConnectedNodes(nullptr)
 {
 }
 
@@ -11,38 +11,56 @@ void BluetoothReceiver::init()
 	BLEDevice::init(QSY_BLUETOOTH);
 	BLEServer* pServer = BLEDevice::createServer();
 	BLEService* pService = pServer->createService(QSY_SERVICE_UUID);
-	BLECharacteristic* pCharacteristic = pService->createCharacteristic(QSY_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_WRITE);
-	pCharacteristic->setCallbacks(new BluetoothReceiver::MyCallbacks(this));
+
+	/* GetConnectedNodes */
+	BLECharacteristic* pCharacteristic = pService->createCharacteristic(QSY_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+	pCharacteristic->setCallbacks(mGetConnectedNodes = new BluetoothReceiver::GetConnectedNodes(this, pCharacteristic));
+
 	pService->start();
 	BLEAdvertising* pAdvertising = pServer->getAdvertising();
 	pAdvertising->start();
 }
 
-void BluetoothReceiver::MyCallbacks::onWrite(BLECharacteristic* pCharacteristic)
+void BluetoothReceiver::GetConnectedNodes::onRead(BLECharacteristic* pCharacteristic)
 {
-	xSemaphoreTake(mBluetooth->mMutexBuffer, portMAX_DELAY);
-	{
-		std::string value = pCharacteristic->getValue();
-		for (int i = 0; i < value.size(); i++)
-			mBluetooth->mBuffer[(mBluetooth->mWritePos++) % 64] = value[i];
-	}
-	xSemaphoreGive(mBluetooth->mMutexBuffer);
+	uint16_t value = 0;
+	xSemaphoreTake(mMutex, portMAX_DELAY);
+	value = mValue;
+	xSemaphoreGive(mMutex);
+	pCharacteristic->setValue("" + value);
+}
+
+void BluetoothReceiver::GetConnectedNodes::hello(uint16_t physicalId)
+{
+	uint16_t value = 0;
+	xSemaphoreTake(mMutex, portMAX_DELAY);
+	value = ++mValue;
+	xSemaphoreGive(mMutex);
+	mCharacteristic->setValue("" + value);
+	mCharacteristic->notify();
+}
+
+void BluetoothReceiver::GetConnectedNodes::disconnectedNode(uint16_t physicalId)
+{
+	uint16_t value = 0;
+	xSemaphoreTake(mMutex, portMAX_DELAY);
+	value = --mValue;
+	xSemaphoreGive(mMutex);
+	mCharacteristic->setValue("" + value);
+	mCharacteristic->notify();
 }
 
 void BluetoothReceiver::tick()
 {
-	int data = -1;
-	xSemaphoreTake(mMutexBuffer, portMAX_DELAY);
-	{
-		int available = mWritePos - mReadPos;
-		if (available)
-			data = mBuffer[(mReadPos++) % 64];
-	}
-	xSemaphoreGive(mMutexBuffer);
 
-	if (data != -1)
-	{
-		CommandReceivedFromUser event(data);
-		notify(&event);
-	}
+}
+
+void BluetoothReceiver::hello(uint16_t physicalId)
+{
+	mGetConnectedNodes->hello(physicalId);
+}
+
+void BluetoothReceiver::disconnectedNode(uint16_t physicalId)
+{
+	mGetConnectedNodes->disconnectedNode(physicalId);
 }

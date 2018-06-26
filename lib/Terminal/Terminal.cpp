@@ -44,34 +44,6 @@ void Terminal::notify(const Event* event)
 							mDeadNodesPurger.hello(physicalId);
 							mBluetoothReceiver.hello(physicalId);
 							mTCPSender.hello(physicalId, client);
-
-							/*
-							if (mConnectedNodes.size() == 2)
-							{
-								std::list<const Step*> steps;
-								{
-									std::list<const NodeConfiguration*> nodeConfiguration;
-									nodeConfiguration.push_back(new NodeConfiguration(1, {0, 0, 0xF}, 500));
-									steps.push_back(new Step("1", 2000, false, nodeConfiguration));
-								}
-								{
-									std::list<const NodeConfiguration*> nodeConfiguration;
-									nodeConfiguration.push_back(new NodeConfiguration(2, {0, 0xF, 0xF}, 500));
-									steps.push_back(new Step("2", 2000, false, nodeConfiguration));	
-								}
-								{
-									std::list<const NodeConfiguration*> nodeConfiguration;
-									nodeConfiguration.push_back(new NodeConfiguration(1, {0xF, 0xF, 0xF}, 500));
-									nodeConfiguration.push_back(new NodeConfiguration(2, {0x0, 0xF, 0xF}, 500));
-									
-									steps.push_back(new Step("1&2", 2000, false, nodeConfiguration));	
-								}
-								const Routine* routine = new Routine(1, 1, 0, "Rutina", steps);
-								mExecutor = new CustomExecutor(mConnectedNodes, routine);
-								mExecutor->add(this);
-								mExecutor->init();
-							}
-							*/
 						}
 						else
 						{
@@ -119,14 +91,6 @@ void Terminal::notify(const Event* event)
 			break;
 		}
 
-		case Event::EventType::CommandReceivedFromUser:
-		{
-			const CommandReceivedFromUser* commandReceivedFromUser = reinterpret_cast<const CommandReceivedFromUser*>(event);
-			Serial.print("B = ");
-			Serial.println(commandReceivedFromUser->mCommand);
-			break;
-		}
-
 		case Event::EventType::CommandRequest:
 		{
 			const CommandRequest* commandRequestEvent = reinterpret_cast<const CommandRequest*>(event);
@@ -137,6 +101,21 @@ void Terminal::notify(const Event* event)
 			packet->setType(QSYWiFiPacket::PacketType::Command);
 			packet->setStep(commandRequestEvent->mStep);
 			mTCPSender.command(packet);
+			break;
+		}
+
+		case Event::EventType::StartCustomExecution:
+		{
+			break;
+		}
+
+		case Event::EventType::StartPlayerExecution:
+		{
+			break;
+		}
+
+		case Event::EventType::StopExecution:
+		{
 			break;
 		}
 	}

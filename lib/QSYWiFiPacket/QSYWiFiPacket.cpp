@@ -1,5 +1,4 @@
 #include <QSYWiFiPacket.hpp>
-#include <string.h>
 #include <arpa/inet.h>
 
 #define RED_COMPONENT(x)   (x) >> 12 & 0xF

@@ -5,6 +5,7 @@
 #include <BLEServer.h>
 #include <list>
 #include <Arduino.h>
+#include <QSYBLEPacket.hpp>
 
 class BluetoothReceiver : public Observable
 {
@@ -39,27 +40,34 @@ private:
 
 	};
 
-	class SendCommand : public BLECallback
+	class BLEPacketParser : public BLECallback
 	{
 	private:
-		SemaphoreHandle_t mMutex;
-		char mBuffer[QSY_WIFI_PACKET_SIZE];
-		uint8_t mWritePos;
-		bool mReadyToRead;
+		char mHeader[QSY_BLE_HEADER_PACKET_SIZE];
+		uint16_t mWritePos;
+		char* mPayload;
 		unsigned long mLastTimeReceived;
 
+		SemaphoreHandle_t mMutex;
+		void* mPacketReceived;
+		QSYBLEHeaderPacket::PacketType mPacketType;
+
 	public:
-		inline SendCommand(BluetoothReceiver* bluetooth, BLECharacteristic* characteristic)	
-			:BLECallback(bluetooth, characteristic), mMutex(xSemaphoreCreateMutex()), mWritePos(0), mReadyToRead(false), mLastTimeReceived(millis())
+		inline BLEPacketParser(BluetoothReceiver* bluetooth, BLECharacteristic* characteristic)
+			:BLECallback(bluetooth, characteristic), mWritePos(0), mPayload(nullptr), mLastTimeReceived(millis()), mMutex(xSemaphoreCreateMutex()), mPacketReceived(nullptr)
 		{
 		}
 
 		void onWrite(BLECharacteristic* pCharacteristic) override;
-		const QSYWiFiPacket* tick();
+		const Event* tick();
+
+	private:
+		void processPacket(const QSYBLEHeaderPacket* header, const void* payload);
+
 	};
 
 	GetConnectedNodes* mGetConnectedNodes;
-	SendCommand* mSendCommand;
+	BLEPacketParser* mBLEPacketParser;
 
 public:
 	BluetoothReceiver();

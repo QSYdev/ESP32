@@ -84,6 +84,11 @@ void Terminal::notify(const Event* event)
 				case QSYPacket::PacketType::Touche:
 				{
 					mDeadNodesPurger.touche(physicalId);
+					if (mExecutor)
+					{
+						const QSYPacket* p = packetReceivedEvent->mPacket;
+						mExecutor->touche(p->getId(), p->getStep(), p->getColor(), p->getDelay());
+					}
 					break;
 				}
 

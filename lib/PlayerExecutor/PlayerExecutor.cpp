@@ -46,7 +46,8 @@ const Step* PlayerExecutor::getNextStep()
 	std::list<const NodeConfiguration*> nodesConfiguration;
 	std::stringstream ss;
 
-	for (const Color& color : mPlayersAndColors) {
+	for (const Color& color : mPlayersAndColors)
+	{
 		int logicalId = removeAtIndex(usedIds, rand() % usedIds.size());
 		nodesConfiguration.push_back(new NodeConfiguration(logicalId, color, mStepDelay));
 		ss << (int) logicalId << booleanOperator;
@@ -55,9 +56,7 @@ const Step* PlayerExecutor::getNextStep()
 	const char* expression = ss.str().substr(0, ss.str().size() - 1).data();
 
 	++mStepIndex;
-	Step* step = new Step(expression, mStepTimeOut, mStopOnStepTimeOut, nodesConfiguration);
-	mLastCreatedStep = step;
-	return step;
+	return mLastCreatedStep = new Step(expression, mStepTimeOut, mStopOnStepTimeOut, nodesConfiguration);
 }
 
 void PlayerExecutor::toucheEvent(Executor* executor, uint16_t physicalId, uint16_t stepIndex, const Color& color, uint32_t delay)

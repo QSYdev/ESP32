@@ -30,7 +30,9 @@ void BluetoothReceiver::GetConnectedNodes::onRead(BLECharacteristic* pCharacteri
 {
 	uint16_t value = 0;
 	xSemaphoreTake(mMutex, portMAX_DELAY);
-	value = mValue;
+	{
+		value = mValue;
+	}
 	xSemaphoreGive(mMutex);
 	pCharacteristic->setValue(value);
 }
@@ -39,7 +41,9 @@ void BluetoothReceiver::GetConnectedNodes::hello(uint16_t physicalId)
 {
 	uint16_t value = 0;
 	xSemaphoreTake(mMutex, portMAX_DELAY);
-	value = ++mValue;
+	{
+		value = mValue;
+	}
 	xSemaphoreGive(mMutex);
 	mCharacteristic->setValue(value);
 	mCharacteristic->notify();
@@ -49,7 +53,9 @@ void BluetoothReceiver::GetConnectedNodes::disconnectedNode(uint16_t physicalId)
 {
 	uint16_t value = 0;
 	xSemaphoreTake(mMutex, portMAX_DELAY);
-	value = --mValue;
+	{
+		value = mValue;
+	}
 	xSemaphoreGive(mMutex);
 	mCharacteristic->setValue(value);
 	mCharacteristic->notify();

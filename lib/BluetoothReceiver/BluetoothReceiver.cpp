@@ -1,5 +1,6 @@
 #include <BluetoothReceiver.hpp>
-#include <QSYPacket.hpp>
+#include <QSYWiFiPacket.hpp>
+#include <QSYBLEPacket.hpp>
 
 BluetoothReceiver::BluetoothReceiver()
 	:mGetConnectedNodes(nullptr), mSendCommand(nullptr)
@@ -8,17 +9,17 @@ BluetoothReceiver::BluetoothReceiver()
 
 void BluetoothReceiver::init()
 {
-	BLEDevice::init(QSY_BLUETOOTH);
+	BLEDevice::init(QSY_BLE_SSID);
 	BLEServer* pServer = BLEDevice::createServer();
-	BLEService* pService = pServer->createService(QSY_SERVICE_UUID);
+	BLEService* pService = pServer->createService(QSY_BLE_SERVICE_UUID);
 
 	/* GetConnectedNodes */
-	BLECharacteristic* getConnectedNodesChar = pService->createCharacteristic(QSY_GET_CONNECTED_NODES_CHAR, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+	BLECharacteristic* getConnectedNodesChar = pService->createCharacteristic(QSY_BLE_GET_CONNECTED_NODES_UUID, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 	getConnectedNodesChar->setCallbacks(mGetConnectedNodes = new BluetoothReceiver::GetConnectedNodes(this, getConnectedNodesChar));
 	getConnectedNodesChar->setValue("0");
 
 	/* SendCommand */
-	BLECharacteristic* sendCommandChar = pService->createCharacteristic(QSY_SEND_COMMAND_CHAR, BLECharacteristic::PROPERTY_WRITE);
+	BLECharacteristic* sendCommandChar = pService->createCharacteristic(QSY_BLE_SEND_COMMAND_UUID, BLECharacteristic::PROPERTY_WRITE);
 	sendCommandChar->setCallbacks(mSendCommand = new BluetoothReceiver::SendCommand(this, sendCommandChar));
 
 	pService->start();
@@ -34,7 +35,10 @@ void BluetoothReceiver::GetConnectedNodes::onRead(BLECharacteristic* pCharacteri
 		value = mValue;
 	}
 	xSemaphoreGive(mMutex);
-	pCharacteristic->setValue(value);
+	uint8_t temp[2];
+	temp[0] = value;
+	temp[1] = value >> 8;
+	pCharacteristic->setValue(temp, 2);
 }
 
 void BluetoothReceiver::GetConnectedNodes::hello(uint16_t physicalId)
@@ -45,7 +49,10 @@ void BluetoothReceiver::GetConnectedNodes::hello(uint16_t physicalId)
 		value = mValue;
 	}
 	xSemaphoreGive(mMutex);
-	mCharacteristic->setValue(value);
+	uint8_t temp[2];
+	temp[0] = value;
+	temp[1] = value >> 8;
+	mCharacteristic->setValue(temp, 2);
 	mCharacteristic->notify();
 }
 
@@ -57,7 +64,10 @@ void BluetoothReceiver::GetConnectedNodes::disconnectedNode(uint16_t physicalId)
 		value = mValue;
 	}
 	xSemaphoreGive(mMutex);
-	mCharacteristic->setValue(value);
+	uint8_t temp[2];
+	temp[0] = value;
+	temp[1] = value >> 8;
+	mCharacteristic->setValue(temp, 2);
 	mCharacteristic->notify();
 }
 
@@ -70,24 +80,24 @@ void BluetoothReceiver::SendCommand::onWrite(BLECharacteristic* pCharacteristic)
 		mWritePos = (tNow - mLastTimeReceived > 1000) ? 0 : mWritePos;
 		mLastTimeReceived = tNow;
 
-		for (int i = 0; i < value.size() && mWritePos < QSY_PACKET_SIZE; i++)
+		for (int i = 0; i < value.size() && mWritePos < QSY_WIFI_PACKET_SIZE; i++)
 			mBuffer[mWritePos++] = value[i];
 		
-		mWritePos = mWritePos % QSY_PACKET_SIZE;
+		mWritePos = mWritePos % QSY_WIFI_PACKET_SIZE;
 		mReadyToRead = !mWritePos;
 	}
 	xSemaphoreGive(mMutex);
 }
 
-const QSYPacket* BluetoothReceiver::SendCommand::tick()
+const QSYWiFiPacket* BluetoothReceiver::SendCommand::tick()
 {
-	const QSYPacket* result = nullptr;
+	const QSYWiFiPacket* result = nullptr;
 	if (xSemaphoreTake(mMutex, 10 / portTICK_PERIOD_MS) == pdTRUE)
 	{
 		if (mReadyToRead)
 		{
-			result = reinterpret_cast<QSYPacket*>(mBuffer);
-			if (!result->isValid() || result->getType() != QSYPacket::PacketType::Command)
+			result = reinterpret_cast<QSYWiFiPacket*>(mBuffer);
+			if (!result->isValid() || result->getType() != QSYWiFiPacket::PacketType::Command)
 				result = nullptr;
 			mReadyToRead = false;
 		}
@@ -98,7 +108,7 @@ const QSYPacket* BluetoothReceiver::SendCommand::tick()
 
 void BluetoothReceiver::tick()
 {
-	const QSYPacket* packet = mSendCommand->tick();
+	const QSYWiFiPacket* packet = mSendCommand->tick();
 	if (packet)
 	{
 		const CommandRequest commandRequestEvent(packet->getId(), packet->getColor(), packet->getDelay(), packet->getStep());

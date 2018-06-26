@@ -8,7 +8,7 @@ class Multicast : public Observable
 
 private:
 	bool mAcceptingPackets;
-	char mPacketBuffer[QSY_PACKET_SIZE];
+	char mPacketBuffer[QSY_WIFI_PACKET_SIZE];
 	WiFiUDP mUDP;
 
 public:

@@ -1,5 +1,5 @@
 #include <Terminal.hpp>
-#include <QSYPacket.hpp>
+#include <QSYWiFiPacket.hpp>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <algorithm>
@@ -29,12 +29,12 @@ void Terminal::notify(const Event* event)
 			uint16_t physicalId = packetReceivedEvent->mPacket->getId();
 			switch(packetReceivedEvent->mPacket->getType())
 			{
-				case QSYPacket::PacketType::Hello:
+				case QSYWiFiPacket::PacketType::Hello:
 				{
 					if (std::find(mConnectedNodes.begin(), mConnectedNodes.end(), physicalId) == mConnectedNodes.end())
 					{
 						WiFiClient* client = new WiFiClient();
-						if (client->connect(packetReceivedEvent->mIpRemote, QSY_TCP_SERVER_PORT))
+						if (client->connect(packetReceivedEvent->mIpRemote, QSY_WIFI_TCP_SERVER_PORT))
 						{
 							Serial.print("C = ");
 							Serial.println(physicalId);
@@ -81,18 +81,18 @@ void Terminal::notify(const Event* event)
 					break;
 				}
 
-				case QSYPacket::PacketType::Touche:
+				case QSYWiFiPacket::PacketType::Touche:
 				{
 					mDeadNodesPurger.touche(physicalId);
 					if (mExecutor)
 					{
-						const QSYPacket* p = packetReceivedEvent->mPacket;
+						const QSYWiFiPacket* p = packetReceivedEvent->mPacket;
 						mExecutor->touche(p->getId(), p->getStep(), p->getColor(), p->getDelay());
 					}
 					break;
 				}
 
-				case QSYPacket::PacketType::Keepalive:
+				case QSYWiFiPacket::PacketType::Keepalive:
 				{
 					mDeadNodesPurger.keepAlive(physicalId);
 					break;
@@ -130,11 +130,11 @@ void Terminal::notify(const Event* event)
 		case Event::EventType::CommandRequest:
 		{
 			const CommandRequest* commandRequestEvent = reinterpret_cast<const CommandRequest*>(event);
-			QSYPacket* packet = new QSYPacket();
+			QSYWiFiPacket* packet = new QSYWiFiPacket();
 			packet->setId(commandRequestEvent->mId);
 			packet->setDelay(commandRequestEvent->mDelay);
 			packet->setColor(commandRequestEvent->mColor);
-			packet->setType(QSYPacket::PacketType::Command);
+			packet->setType(QSYWiFiPacket::PacketType::Command);
 			packet->setStep(commandRequestEvent->mStep);
 			mTCPSender.command(packet);
 			break;

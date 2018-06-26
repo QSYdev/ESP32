@@ -1,7 +1,7 @@
 #pragma once
 #include <list>
 #include <IPAddress.h>
-#include <QSYPacket.hpp>
+#include <QSYWiFiPacket.hpp>
 
 class Event
 {
@@ -25,9 +25,9 @@ class PacketReceived : public Event
 
 public:
 	const IPAddress mIpRemote;
-	const QSYPacket* mPacket;
+	const QSYWiFiPacket* mPacket;
 
-	inline PacketReceived(const IPAddress ipRemote, const QSYPacket* packet)	:Event(EventType::PacketReceived), mIpRemote(ipRemote), mPacket(packet) {}
+	inline PacketReceived(const IPAddress ipRemote, const QSYWiFiPacket* packet)	:Event(EventType::PacketReceived), mIpRemote(ipRemote), mPacket(packet) {}
 
 };
 

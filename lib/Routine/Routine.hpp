@@ -1,7 +1,7 @@
 #pragma once
 #include <list>
 #include <string>
-#include <QSYPacket.hpp>
+#include <QSYWiFiPacket.hpp>
 
 class NodeConfiguration
 {

@@ -7,17 +7,17 @@ Multicast::Multicast()
 
 void Multicast::init()
 {
-	mUDP.beginMulticast(QSY_MULTICAST_ADDRESS, QSY_MULTICAST_PORT);
+	mUDP.beginMulticast(QSY_WIFI_MULTICAST_ADDRESS, QSY_WIFI_MULTICAST_PORT);
 }
 
 void Multicast::tick()
 {
 	if (isAcceptingPackets() && mUDP.parsePacket() > 0)
 	{
-		if (mUDP.read(mPacketBuffer, QSY_PACKET_SIZE) != QSY_PACKET_SIZE)
+		if (mUDP.read(mPacketBuffer, QSY_WIFI_PACKET_SIZE) != QSY_WIFI_PACKET_SIZE)
 			return;
 			
-		QSYPacket* packet = reinterpret_cast<QSYPacket*>(mPacketBuffer);
+		const QSYWiFiPacket* packet = reinterpret_cast<const QSYWiFiPacket*>(mPacketBuffer);
 		PacketReceived event(mUDP.remoteIP(), packet);
 		notify(&event);
 	}

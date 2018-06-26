@@ -3,20 +3,16 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define QSY_SSID						"ESP32"
-#define QSY_PASSWORD					"123456789"
-#define QSY_BLUETOOTH					"ESP32"
-#define QSY_SERVICE_UUID				"4fafc201-1fb5-459e-8fcc-c5c9c331914b"
-#define QSY_GET_CONNECTED_NODES_CHAR	"beb5483e-36e1-4688-b7f5-ea07361b26a8"
-#define QSY_SEND_COMMAND_CHAR			"68ff842d-1f89-4346-a4cc-ffd7a733acce"
-#define QSY_MAX_CONNECTIONS				8
-#define QSY_PACKET_SIZE					16
-#define QSY_MULTICAST_ADDRESS			{224, 0, 0, 12}
-#define QSY_MULTICAST_PORT				3000
-#define QSY_TCP_SERVER_PORT				3000
-#define QSY_MAX_ALLOWED_TIME			750
-#define QSY_MAX_TRIES					5
-#define QSY_DEAD_NODES_PURGER_PERIOD	1125
+#define QSY_WIFI_SSID						"ESP32"
+#define QSY_WIFI_PASSWORD					"123456789"
+#define QSY_WIFI_MAX_CONNECTIONS			8
+#define QSY_WIFI_PACKET_SIZE				16
+#define QSY_WIFI_MULTICAST_ADDRESS			{224, 0, 0, 12}
+#define QSY_WIFI_MULTICAST_PORT				3000
+#define QSY_WIFI_TCP_SERVER_PORT			3000
+#define QSY_WIFI_MAX_ALLOWED_TIME			750
+#define QSY_WIFI_MAX_TRIES					5
+#define QSY_WIFI_DEAD_NODES_PURGER_PERIOD	1125
 
 class Color
 {
@@ -31,7 +27,7 @@ public:
 
 } __attribute__ ((packed));
 
-class QSYPacket
+class QSYWiFiPacket
 {
 
 private:
@@ -54,7 +50,7 @@ public:
 
 public:
 
-	QSYPacket();
+	QSYWiFiPacket();
 	
 	bool isValid() const;
 

@@ -11,10 +11,10 @@ private:
 	{
 	public:
 		WiFiClient* mWiFiClient;
-		char mBuffer[QSY_PACKET_SIZE];
+		char mBuffer[QSY_WIFI_PACKET_SIZE];
 		int mAvailable;
 
-		inline ListElement(WiFiClient* wifiClient)	:mWiFiClient(wifiClient), mAvailable(QSY_PACKET_SIZE) {}
+		inline ListElement(WiFiClient* wifiClient)	:mWiFiClient(wifiClient), mAvailable(QSY_WIFI_PACKET_SIZE) {}
 
 	};
 

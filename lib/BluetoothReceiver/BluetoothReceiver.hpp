@@ -43,7 +43,7 @@ private:
 	{
 	private:
 		SemaphoreHandle_t mMutex;
-		char mBuffer[QSY_PACKET_SIZE];
+		char mBuffer[QSY_WIFI_PACKET_SIZE];
 		uint8_t mWritePos;
 		bool mReadyToRead;
 		unsigned long mLastTimeReceived;
@@ -55,7 +55,7 @@ private:
 		}
 
 		void onWrite(BLECharacteristic* pCharacteristic) override;
-		const QSYPacket* tick();
+		const QSYWiFiPacket* tick();
 	};
 
 	GetConnectedNodes* mGetConnectedNodes;

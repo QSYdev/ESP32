@@ -14,7 +14,7 @@ void DeadNodesPurger::init()
 void DeadNodesPurger::tick()
 {
 	unsigned long timeNow = millis();
-	if (timeNow - mElapsedTime >= QSY_DEAD_NODES_PURGER_PERIOD)
+	if (timeNow - mElapsedTime >= QSY_WIFI_DEAD_NODES_PURGER_PERIOD)
 	{
 		mElapsedTime = timeNow;
 		std::list<uint16_t> purgedNodes;
@@ -23,10 +23,10 @@ void DeadNodesPurger::tick()
 		while (iterator != mConnectedNodes.end())
 		{
 			ListElement* elem = iterator->second;
-			if (timeNow - elem->mLastKeepAlive > QSY_MAX_ALLOWED_TIME)
+			if (timeNow - elem->mLastKeepAlive > QSY_WIFI_MAX_ALLOWED_TIME)
 			{
 				++elem->mTries;
-				if (elem->mTries >= QSY_MAX_TRIES)
+				if (elem->mTries >= QSY_WIFI_MAX_TRIES)
 					purgedNodes.push_back(iterator->first);
 			}
 			else

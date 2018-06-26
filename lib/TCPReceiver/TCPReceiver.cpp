@@ -26,7 +26,7 @@ void TCPReceiver::tick()
 			if (!currentElement->mAvailable)
 			{
 				nodesToNotify.push_back(currentElement);
-				currentElement->mAvailable = QSY_PACKET_SIZE;
+				currentElement->mAvailable = QSY_WIFI_PACKET_SIZE;
 			}
 		}
 		++iterator;
@@ -34,7 +34,7 @@ void TCPReceiver::tick()
 
 	for (ListElement* element : nodesToNotify)
 	{
-		PacketReceived event(element->mWiFiClient->remoteIP(), reinterpret_cast<QSYPacket*>(element->mBuffer));
+		PacketReceived event(element->mWiFiClient->remoteIP(), reinterpret_cast<const QSYWiFiPacket*>(element->mBuffer));
 		notify(&event);
 	}
 }

@@ -88,25 +88,28 @@ private:
 	PreInitTask mPreInitTask;
 	RoutineTimeOutTask mRoutineTimeOutTask;
 	StepTimeOutTask mStepTimeOutTask;
-	
+
 	void(*mToucheEvent)(Executor*, uint16_t, uint16_t, const Color&, uint32_t);
 	void(*mStepTimeOutEvent)(Executor*, uint16_t);
 	
+	bool mExecutionFinished;
+	
 public:
 	Executor(std::list<uint16_t>& associationList, unsigned long routineTimeOut, void (*toucheEvent)(Executor*, uint16_t, uint16_t, const Color&, uint32_t), void (*stepTimeOutEvent)(Executor*, uint16_t));
-	~Executor();
+	virtual ~Executor();
 	
 	void init();
 	void tick();
 
+	inline bool contains(uint16_t physicalId)	{ return mBiMap.contains(physicalId); }
 	void touche(uint16_t physicalId, uint16_t stepIndex, const Color& color, uint32_t delay);
+	inline bool isExecutionFinished() const		{ return mExecutionFinished; }
 
 protected:
 	virtual bool hasNextStep() = 0;
 	virtual const Step* getNextStep() = 0;
 	
 private:
-	inline bool contains(uint16_t physicalId)	{ return mBiMap.contains(physicalId); }
 	void turnAllNodes(const Color& color);
 	void prepareStep();
 	void finalizeStep();

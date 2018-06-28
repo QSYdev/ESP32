@@ -76,6 +76,7 @@ public:
 	void tick();
 
 	void hello(uint16_t physicalId);
+	void touche(uint16_t physicalId);
 	void disconnectedNode(uint16_t phyisicalId);
 	
 };

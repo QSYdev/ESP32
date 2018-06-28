@@ -226,6 +226,11 @@ void BluetoothReceiver::hello(uint16_t physicalId)
 	mGetConnectedNodes->hello(physicalId);
 }
 
+void BluetoothReceiver::touche(uint16_t physicalId)
+{
+	//TODO implementar.
+}
+
 void BluetoothReceiver::disconnectedNode(uint16_t physicalId)
 {
 	mGetConnectedNodes->disconnectedNode(physicalId);

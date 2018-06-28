@@ -16,6 +16,9 @@ public:
 		StartCustomExecution,
 		StartPlayerExecution,
 		StopExecution,
+		ExecutionStarted,
+		ExecutionFinished,
+		ExecutionStepTimeOut,
 	};
 
 	const EventType mType;
@@ -51,8 +54,9 @@ public:
 	const Color mColor;
 	const uint32_t mDelay;
 	const uint16_t mStep;
+	const bool mFromExecutor;
 
-	inline CommandRequest(uint16_t id, const Color& color, uint32_t delay, uint16_t step)	:Event(EventType::CommandRequest), mId(id), mColor(color), mDelay(delay), mStep(step)	{}
+	inline CommandRequest(uint16_t id, const Color& color, uint32_t delay, uint16_t step, bool fromExecutor = false)	:Event(EventType::CommandRequest), mId(id), mColor(color), mDelay(delay), mStep(step), mFromExecutor(fromExecutor)	{}
 
 };
 
@@ -90,6 +94,27 @@ class StopExecution : public Event
 
 public:
 	inline StopExecution()	:Event(EventType::StopExecution)	{}
+};
+
+class ExecutionStarted : public Event
+{
+
+public:
+	inline ExecutionStarted()	:Event(EventType::ExecutionStarted)	{}
+};
+
+class ExecutionFinished : public Event
+{
+
+public:
+	inline ExecutionFinished()	:Event(EventType::ExecutionFinished)	{}
+};
+
+class ExecutionStepTimeOut : public Event
+{
+
+public:
+	inline ExecutionStepTimeOut()	:Event(EventType::ExecutionStepTimeOut)	{}
 };
 
 

@@ -45,6 +45,8 @@ void Executor::PreInitTask::tick()
 		{
 			mExecutor->turnAllNodes({0, 0, 0});
 			Serial.println("Arranca la rutina");
+			const ExecutionStarted event;
+			mExecutor->notify(&event);
 			if (mExecutor->hasNextStep())
 			{
 				mExecutor->mCurrentStep = mExecutor->getNextStep();
@@ -74,10 +76,7 @@ void Executor::RoutineTimeOutTask::tick()
 
 	unsigned long timeNow = millis();
 	if (timeNow - mElapsedTime >= mRoutineTimeOut)
-	{
 		mExecutor->finalizeRoutine(true);
-		Serial.println("RoutineTimeOut");
-	}
 }
 
 void Executor::StepTimeOutTask::start(unsigned long stepTimeOut, uint16_t stepIndex)
@@ -99,7 +98,9 @@ void Executor::StepTimeOutTask::tick()
 		if (mExecutor->mStepTimeOutEvent)
 			mExecutor->mStepTimeOutEvent(mExecutor, mStepIndex);
 
-		Serial.println("StepTimeOut");
+		const ExecutionStepTimeOut event;
+		mExecutor->notify(&event);
+		
 		mExecutor->finalizeStep();
 		if (mExecutor->hasNextStep() && !mExecutor->mCurrentStep->mStopOnTimeOut)
 		{
@@ -114,7 +115,7 @@ void Executor::StepTimeOutTask::tick()
 }
 
 Executor::Executor(std::list<uint16_t>& associationList, unsigned long routineTimeOut, void (*toucheEvent)(Executor*, uint16_t, uint16_t, const Color&, uint32_t), void (*stepTimeOutEvent)(Executor*, uint16_t))
-	:mBiMap(associationList), mTouchedNodes(new bool[associationList.size() + 1]), mExpressionTree(nullptr), mPreInitTask(this), mRoutineTimeOutTask(this, routineTimeOut), mStepTimeOutTask(this), mToucheEvent(toucheEvent), mStepTimeOutEvent(stepTimeOutEvent)
+	:mBiMap(associationList), mTouchedNodes(new bool[associationList.size() + 1]), mExpressionTree(nullptr), mPreInitTask(this), mRoutineTimeOutTask(this, routineTimeOut), mStepTimeOutTask(this), mToucheEvent(toucheEvent), mStepTimeOutEvent(stepTimeOutEvent), mExecutionFinished(false)
 {
 	memset(mTouchedNodes, 0, associationList.size() + 1);
 }
@@ -173,7 +174,7 @@ void Executor::prepareStep()
 		if (delay > maxDelay)
 			maxDelay = delay;
 		
-		const CommandRequest event(physicalId, configuration->mColor, delay, mStepIndex);
+		const CommandRequest event(physicalId, configuration->mColor, delay, mStepIndex, true);
 		notify(&event);
 	}
 
@@ -188,7 +189,7 @@ void Executor::turnAllNodes(const Color& col)
 	for (uint16_t i = 0; i < mBiMap.size(); i++)
 	{
 		uint16_t physicalId = mBiMap.getPhysicalId(i + 1);
-		const CommandRequest event(physicalId, col, 0, 0);
+		const CommandRequest event(physicalId, col, 0, 0, true);
 		notify(&event);
 	}
 }
@@ -201,7 +202,7 @@ void Executor::finalizeStep()
 		if (!mTouchedNodes[nodeConfiguration->mLogicalId]) 
 		{
 			uint16_t physicalId = mBiMap.getPhysicalId(nodeConfiguration->mLogicalId);
-			const CommandRequest event(physicalId, noColor, 0, 0);
+			const CommandRequest event(physicalId, noColor, 0, 0, true);
 			notify(&event);
 		}
 	}
@@ -223,6 +224,10 @@ void Executor::finalizeRoutine(bool notify)
 	mPreInitTask.stop();
 	mRoutineTimeOutTask.stop();
 	mStepTimeOutTask.stop();
-	//TODO notify.
-	Serial.println("Rutina Finalizada.");
+	mExecutionFinished = true;
+	if (notify)
+	{
+		const ExecutionFinished event;
+		this->notify(&event);
+	}
 }

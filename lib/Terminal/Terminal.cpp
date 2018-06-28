@@ -47,6 +47,8 @@ void Terminal::notify(const Event* event)
 						}
 						else
 						{
+							Serial.println("Se metio por aca");
+							client->flush();
 							delete client;
 						}
 					}
@@ -61,6 +63,7 @@ void Terminal::notify(const Event* event)
 						const QSYWiFiPacket* p = packetReceivedEvent->mPacket;
 						mExecutor->touche(p->getId(), p->getStep(), p->getColor(), p->getDelay());
 					}
+					mBluetoothReceiver.touche(physicalId);
 					break;
 				}
 
@@ -94,28 +97,72 @@ void Terminal::notify(const Event* event)
 		case Event::EventType::CommandRequest:
 		{
 			const CommandRequest* commandRequestEvent = reinterpret_cast<const CommandRequest*>(event);
-			QSYWiFiPacket* packet = new QSYWiFiPacket();
-			packet->setId(commandRequestEvent->mId);
-			packet->setDelay(commandRequestEvent->mDelay);
-			packet->setColor(commandRequestEvent->mColor);
-			packet->setType(QSYWiFiPacket::PacketType::Command);
-			packet->setStep(commandRequestEvent->mStep);
-			mTCPSender.command(packet);
+			if (commandRequestEvent->mFromExecutor || !mExecutor || !mExecutor->contains(commandRequestEvent->mId))
+			{
+				QSYWiFiPacket* packet = new QSYWiFiPacket();
+				packet->setId(commandRequestEvent->mId);
+				packet->setDelay(commandRequestEvent->mDelay);
+				packet->setColor(commandRequestEvent->mColor);
+				packet->setType(QSYWiFiPacket::PacketType::Command);
+				packet->setStep(commandRequestEvent->mStep);
+				mTCPSender.command(packet);
+			}
 			break;
 		}
 
 		case Event::EventType::StartCustomExecution:
 		{
+			//TODO verificar la correctitud de los parametros.
+			if (mExecutor)
+			{
+				delete mExecutor;
+				mExecutor = nullptr;
+			}
+
+			//TODO iniciar la nueva rutina.
+			mExecutor->add(this);
 			break;
 		}
 
 		case Event::EventType::StartPlayerExecution:
 		{
+			//TODO verificar la correctitud de los parametros.
+			if (mExecutor)
+			{
+				delete mExecutor;
+				mExecutor = nullptr;
+			}
+
+			//TODO iniciar la nueva rutina.
+			mExecutor->add(this);
 			break;
 		}
 
 		case Event::EventType::StopExecution:
 		{
+			if (mExecutor)
+			{
+				delete mExecutor;
+				mExecutor = nullptr;
+			}
+			break;
+		}
+
+		case Event::EventType::ExecutionStarted:
+		{
+			Serial.println("Inicia la rutina");
+			break;
+		}
+
+		case Event::EventType::ExecutionFinished:
+		{
+			Serial.println("Finaliza la rutina");
+			break;
+		}
+
+		case Event::EventType::ExecutionStepTimeOut:
+		{
+			Serial.println("StepTimeOut");
 			break;
 		}
 	}
@@ -148,7 +195,14 @@ void Terminal::task0(void* args)
 			term->mDeadNodesPurger.tick();
 			term->mBluetoothReceiver.tick();
 			if (term->mExecutor)
+			{
 				term->mExecutor->tick();
+				if (term->mExecutor->isExecutionFinished())
+				{
+					delete term->mExecutor;
+					term->mExecutor = nullptr;
+				}
+			}
 		}
 		catch (...)
 		{

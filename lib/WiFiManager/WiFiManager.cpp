@@ -8,8 +8,8 @@ WiFiManager::WiFiManager()
 
 void WiFiManager::init()
 {
-	WiFi.softAPdisconnect(true);
 	WiFi.mode(WIFI_AP);
+	WiFi.softAPdisconnect(true);
 	WiFi.softAP(QSY_WIFI_SSID, QSY_WIFI_PASSWORD, 10, 1, QSY_WIFI_MAX_CONNECTIONS);
 }
 

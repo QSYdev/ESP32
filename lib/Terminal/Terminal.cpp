@@ -121,6 +121,7 @@ void Terminal::notify(const Event* event)
 
 			//TODO iniciar la nueva rutina.
 			mExecutor->add(this);
+			mExecutor->init();
 			break;
 		}
 
@@ -135,6 +136,7 @@ void Terminal::notify(const Event* event)
 
 			//TODO iniciar la nueva rutina.
 			mExecutor->add(this);
+			mExecutor->init();
 			break;
 		}
 

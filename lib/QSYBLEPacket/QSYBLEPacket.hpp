@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <QSYWiFiPacket.hpp>
 
 #define QSY_BLE_SSID						"ESP32"
 #define QSY_BLE_SERVICE_UUID				"4fafc201-1fb5-459e-8fcc-c5c9c331914b"
@@ -29,5 +30,23 @@ public:
 	bool isValid() const;
 	PacketType getType() const;
 	uint16_t getPayloadSize() const;
+
+} __attribute__ ((packed));
+
+class QSYBLECommandRequestPacket
+{
+private:
+	uint16_t mId;
+	uint16_t mColor;
+	uint32_t mDelay;
+	uint16_t mStep;
+
+public:
+	QSYBLECommandRequestPacket();
+
+	uint16_t getId() const;
+	const Color getColor() const;
+	uint32_t getDelay() const;
+	uint16_t getStep() const;
 
 } __attribute__ ((packed));

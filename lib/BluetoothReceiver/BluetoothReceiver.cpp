@@ -109,15 +109,20 @@ void BluetoothReceiver::BLEPacketParser::onWrite(BLECharacteristic* pCharacteris
 	}
 }
 
-void BluetoothReceiver::BLEPacketParser::processPacket(const QSYBLEHeaderPacket* header, const void* payload)
+void BluetoothReceiver::BLEPacketParser::processPacket(const QSYBLEHeaderPacket* header, const char* payload)
 {
 	xSemaphoreTake(mMutex, portMAX_DELAY);
 	{
-		mPacketType = header->getType();
-		switch(mPacketType)
+		switch(header->getType())
 		{
 			case QSYBLEHeaderPacket::PacketType::CommandRequest:
 			{
+				const QSYBLECommandRequestPacket* args = reinterpret_cast<const QSYBLECommandRequestPacket*>(payload);
+				Serial.print("BLE ID = ");
+				Serial.println(args->getId());
+				Serial.print("BLE RED = ");
+				Serial.println(args->getColor().mRed);
+				mEventToNotify = new CommandRequest({args->getId(), args->getColor(), args->getDelay(), args->getStep()}, false);
 				break;
 			}
 
@@ -133,6 +138,7 @@ void BluetoothReceiver::BLEPacketParser::processPacket(const QSYBLEHeaderPacket*
 
 			case QSYBLEHeaderPacket::PacketType::StopExecution:
 			{
+				mEventToNotify = new StopExecution();
 				break;
 			}
 		}
@@ -142,40 +148,33 @@ void BluetoothReceiver::BLEPacketParser::processPacket(const QSYBLEHeaderPacket*
 
 const Event* BluetoothReceiver::BLEPacketParser::tick()
 {
-	const Event* event = nullptr;
+	Event* event = nullptr;
 	if (xSemaphoreTake(mMutex, 10 / portTICK_PERIOD_MS) == pdTRUE)
 	{
-		if (mPacketReceived)
+		if (mEventToNotify)
 		{
-			switch(mPacketType)
+			switch(mEventToNotify->mType)
 			{
-				case QSYBLEHeaderPacket::PacketType::CommandRequest:
+				case Event::EventType::CommandRequest:
 				{
-					// event = new Event::EventType::CommandRequest();
+					event = new CommandRequest(*reinterpret_cast<CommandRequest*>(mEventToNotify));
 					break;
 				}
 
-				case QSYBLEHeaderPacket::PacketType::StartCustomExecution:
+				case Event::EventType::StopExecution:
 				{
-					// event = new Event::EventType::StartCustomExecution();
+					event = new StopExecution(*reinterpret_cast<StopExecution*>(mEventToNotify));
 					break;
 				}
 
-				case QSYBLEHeaderPacket::PacketType::StartPlayerExecution:
+				default:
 				{
-					// event = new Event::EventType::StartPlayerExecution();
-					break;
-				}
-
-				case QSYBLEHeaderPacket::PacketType::StopExecution:
-				{
-					// event = new Event::EventType::StopExecution();
 					break;
 				}
 			}
 
-			delete mPacketReceived;
-			mPacketReceived = nullptr;
+			delete mEventToNotify;
+			mEventToNotify = nullptr;
 		}
 	}
 	xSemaphoreGive(mMutex);

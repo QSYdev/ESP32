@@ -50,7 +50,7 @@ class CommandRequest : public Event
 {
 
 public:
-	const CommandArgs& mCommandArgs;
+	const CommandArgs mCommandArgs;
 	const bool mFromExecutor;
 
 	inline CommandRequest(const CommandArgs& commandArgs, bool fromExecutor = false)	:Event(EventType::CommandRequest), mCommandArgs(commandArgs), mFromExecutor(fromExecutor)	{}

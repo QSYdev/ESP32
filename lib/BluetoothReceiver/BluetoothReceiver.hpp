@@ -49,12 +49,11 @@ private:
 		unsigned long mLastTimeReceived;
 
 		SemaphoreHandle_t mMutex;
-		void* mPacketReceived;
-		QSYBLEHeaderPacket::PacketType mPacketType;
+		Event* mEventToNotify;
 
 	public:
 		inline BLEPacketParser(BluetoothReceiver* bluetooth, BLECharacteristic* characteristic)
-			:BLECallback(bluetooth, characteristic), mWritePos(0), mPayload(nullptr), mLastTimeReceived(millis()), mMutex(xSemaphoreCreateMutex()), mPacketReceived(nullptr)
+			:BLECallback(bluetooth, characteristic), mWritePos(0), mPayload(nullptr), mLastTimeReceived(millis()), mMutex(xSemaphoreCreateMutex()), mEventToNotify(nullptr)
 		{
 		}
 
@@ -62,7 +61,7 @@ private:
 		const Event* tick();
 
 	private:
-		void processPacket(const QSYBLEHeaderPacket* header, const void* payload);
+		void processPacket(const QSYBLEHeaderPacket* header, const char* payload);
 
 	};
 

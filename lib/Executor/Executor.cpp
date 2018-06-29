@@ -80,10 +80,10 @@ void Executor::RoutineTimeOutTask::tick()
 
 void Executor::StepTimeOutTask::start(unsigned long stepTimeOut, uint16_t stepIndex)
 { 
-	mStart = true; 
-	mStepTimeOut = stepTimeOut; 
-	mStepIndex = stepIndex; 
-	mElapsedTime = millis(); 
+	mStart = true;
+	mStepTimeOut = stepTimeOut;
+	mStepIndex = stepIndex;
+	mElapsedTime = millis();
 }
 
 void Executor::StepTimeOutTask::tick()
@@ -179,16 +179,16 @@ void Executor::prepareStep()
 
 	mExpressionTree = new ExpressionTree(mCurrentStep->mExpression);
 
-	if (mCurrentStep->mStepTimeOut > 0)
+	if (mCurrentStep->mStepTimeOut)
 		mStepTimeOutTask.start(mCurrentStep->mStepTimeOut + maxDelay, mStepIndex);
 }
 
-void Executor::turnAllNodes(const Color& col)
+void Executor::turnAllNodes(const Color& color)
 {
 	for (uint16_t i = 0; i < mBiMap.size(); i++)
 	{
 		uint16_t physicalId = mBiMap.getPhysicalId(i + 1);
-		const CommandRequest event({physicalId, col, 0, 0}, true);
+		const CommandRequest event({physicalId, color, 0, 0}, true);
 		notify(&event);
 	}
 }

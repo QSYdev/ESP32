@@ -44,6 +44,18 @@ void Terminal::notify(const Event* event)
 							mDeadNodesPurger.hello(physicalId);
 							mBluetoothReceiver.hello(physicalId);
 							mTCPSender.hello(physicalId, client);
+
+							{
+								if (mConnectedNodes.size() == 2)
+								{
+									std::list<Color> playersAndColors;
+									playersAndColors.push_back({0xF, 0x0, 0x0});
+									playersAndColors.push_back({0x0, 0xF, 0x0});
+									mExecutor = new PlayerExecutor(mConnectedNodes, playersAndColors, false, 3000, 500, 10, false, 0);
+									mExecutor->add(this);
+									mExecutor->init();
+								}
+							}
 						}
 						else
 						{
@@ -87,6 +99,12 @@ void Terminal::notify(const Event* event)
 			Serial.print("D = ");
 			Serial.println(disconnectedNodeEvent->mPhysicalId);
 			mConnectedNodes.remove(disconnectedNodeEvent->mPhysicalId);
+			if (mExecutor && mExecutor->contains(disconnectedNodeEvent->mPhysicalId))
+			{
+				delete mExecutor;
+				mExecutor = nullptr;
+				Serial.println("Rutina interrumpida");
+			}
 			mTCPSender.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 			mTCPReceiver.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 			mDeadNodesPurger.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
@@ -138,6 +156,7 @@ void Terminal::notify(const Event* event)
 			{
 				delete mExecutor;
 				mExecutor = nullptr;
+				Serial.println("Rutina interrumpida");
 			}
 			break;
 		}

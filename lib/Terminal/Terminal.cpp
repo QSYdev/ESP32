@@ -87,26 +87,18 @@ void Terminal::notify(const Event* event)
 			Serial.print("D = ");
 			Serial.println(disconnectedNodeEvent->mPhysicalId);
 			mConnectedNodes.remove(disconnectedNodeEvent->mPhysicalId);
+			mTCPSender.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 			mTCPReceiver.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 			mDeadNodesPurger.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 			mBluetoothReceiver.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
-			mTCPSender.disconnectedNode(disconnectedNodeEvent->mPhysicalId);
 			break;
 		}
 
 		case Event::EventType::CommandRequest:
 		{
 			const CommandRequest* commandRequestEvent = reinterpret_cast<const CommandRequest*>(event);
-			if (commandRequestEvent->mFromExecutor || !mExecutor || !mExecutor->contains(commandRequestEvent->mId))
-			{
-				QSYWiFiPacket* packet = new QSYWiFiPacket();
-				packet->setId(commandRequestEvent->mId);
-				packet->setDelay(commandRequestEvent->mDelay);
-				packet->setColor(commandRequestEvent->mColor);
-				packet->setType(QSYWiFiPacket::PacketType::Command);
-				packet->setStep(commandRequestEvent->mStep);
-				mTCPSender.command(packet);
-			}
+			if (commandRequestEvent->mFromExecutor || !mExecutor || !mExecutor->contains(commandRequestEvent->mCommandArgs.mId))
+				mTCPSender.command(commandRequestEvent->mCommandArgs);
 			break;
 		}
 

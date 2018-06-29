@@ -44,7 +44,6 @@ void Executor::PreInitTask::tick()
 		else
 		{
 			mExecutor->turnAllNodes({0, 0, 0});
-			Serial.println("Arranca la rutina");
 			const ExecutionStarted event;
 			mExecutor->notify(&event);
 			if (mExecutor->hasNextStep())
@@ -174,7 +173,7 @@ void Executor::prepareStep()
 		if (delay > maxDelay)
 			maxDelay = delay;
 		
-		const CommandRequest event(physicalId, configuration->mColor, delay, mStepIndex, true);
+		const CommandRequest event({physicalId, configuration->mColor, delay, mStepIndex}, true);
 		notify(&event);
 	}
 
@@ -189,7 +188,7 @@ void Executor::turnAllNodes(const Color& col)
 	for (uint16_t i = 0; i < mBiMap.size(); i++)
 	{
 		uint16_t physicalId = mBiMap.getPhysicalId(i + 1);
-		const CommandRequest event(physicalId, col, 0, 0, true);
+		const CommandRequest event({physicalId, col, 0, 0}, true);
 		notify(&event);
 	}
 }
@@ -202,7 +201,7 @@ void Executor::finalizeStep()
 		if (!mTouchedNodes[nodeConfiguration->mLogicalId]) 
 		{
 			uint16_t physicalId = mBiMap.getPhysicalId(nodeConfiguration->mLogicalId);
-			const CommandRequest event(physicalId, noColor, 0, 0, true);
+			const CommandRequest event({physicalId, noColor, 0, 0}, true);
 			notify(&event);
 		}
 	}

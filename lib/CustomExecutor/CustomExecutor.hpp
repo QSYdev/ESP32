@@ -11,7 +11,7 @@ private:
 
 public:
 	CustomExecutor(std::list<uint16_t>& associationList, const Routine* routine);
-	~CustomExecutor();
+	~CustomExecutor() override;
 
 protected:
 	bool hasNextStep() override;

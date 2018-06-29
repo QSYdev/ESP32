@@ -20,7 +20,7 @@ public:
 	void init();
 	void tick();
 	void hello(uint16_t physicalId, WiFiClient* node);
-	void command(const QSYWiFiPacket* packet);
+	void command(const CommandArgs& args);
 	void disconnectedNode(uint16_t physicalId);
 
 };

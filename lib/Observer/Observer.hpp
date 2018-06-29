@@ -50,13 +50,10 @@ class CommandRequest : public Event
 {
 
 public:
-	const uint16_t mId;
-	const Color mColor;
-	const uint32_t mDelay;
-	const uint16_t mStep;
+	const CommandArgs& mCommandArgs;
 	const bool mFromExecutor;
 
-	inline CommandRequest(uint16_t id, const Color& color, uint32_t delay, uint16_t step, bool fromExecutor = false)	:Event(EventType::CommandRequest), mId(id), mColor(color), mDelay(delay), mStep(step), mFromExecutor(fromExecutor)	{}
+	inline CommandRequest(const CommandArgs& commandArgs, bool fromExecutor = false)	:Event(EventType::CommandRequest), mCommandArgs(commandArgs), mFromExecutor(fromExecutor)	{}
 
 };
 
@@ -64,7 +61,7 @@ class StartCustomExecution : public Event
 {
 
 public:
-	const Routine* const mRoutine;
+	const Routine* mRoutine;
 	std::list<uint16_t> mAssociationsNodes;
 
 	inline StartCustomExecution(Routine* routine, std::list<uint16_t>& associationsNodes)		:Event(EventType::StartCustomExecution), mRoutine(routine), mAssociationsNodes(associationsNodes)	{}

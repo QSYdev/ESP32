@@ -19,7 +19,7 @@ private:
 	
 public:
 	PlayerExecutor(std::list<uint16_t>& associationList, std::list<Color>& playersAndColors, bool waitForAllPlayers, unsigned long stepTimeOut, unsigned long stepDelay, uint16_t stepsCount, bool stopOnStepTimeOut, unsigned long executionTimeOut);
-	~PlayerExecutor();
+	~PlayerExecutor() override;
 
 protected:
 	bool hasNextStep() override;

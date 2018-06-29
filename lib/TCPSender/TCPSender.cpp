@@ -26,11 +26,11 @@ void TCPSender::tick()
 		xSemaphoreTake(mSemConnectedNodes, portMAX_DELAY);
 		{
 			client = mConnectedNodes[packet->getId()];
+			if (packet && client && packet->isValid() && packet->getType() == QSYWiFiPacket::PacketType::Command)
+				client->write(reinterpret_cast<const char*>(packet), QSY_WIFI_PACKET_SIZE);
 		}
 		xSemaphoreGive(mSemConnectedNodes);
 
-		if (packet && client && packet->isValid() && packet->getType() == QSYWiFiPacket::PacketType::Command)
-			client->write(reinterpret_cast<const char*>(packet), QSY_WIFI_PACKET_SIZE);
 	}
 	catch (...)
 	{
@@ -47,8 +47,9 @@ void TCPSender::hello(uint16_t physicalId, WiFiClient* node)
 	xSemaphoreGive(mSemConnectedNodes);
 }
 
-void TCPSender::command(const QSYWiFiPacket* packet)
+void TCPSender::command(const CommandArgs& args)
 {
+	const QSYWiFiPacket* packet = new QSYWiFiPacket(args);
 	xSemaphoreTake(mSemPendingTasks, portMAX_DELAY);
 	{
 		mPendingTasks.push_back(packet);

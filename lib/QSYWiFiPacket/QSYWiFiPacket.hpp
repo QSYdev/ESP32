@@ -5,6 +5,8 @@
 
 #define QSY_WIFI_SSID						"ESP32"
 #define QSY_WIFI_PASSWORD					"123456789"
+#define QSY_WIFI_CHANNEL					10
+#define QSY_WIFI_SSID_HIDDEN				1
 #define QSY_WIFI_MAX_CONNECTIONS			8
 #define QSY_WIFI_PACKET_SIZE				16
 #define QSY_WIFI_MULTICAST_ADDRESS			{224, 0, 0, 12}
@@ -26,6 +28,17 @@ public:
 	inline Color(uint8_t red, uint8_t green, uint8_t blue)	:mRed(red), mGreen(green), mBlue(blue)	{}
 
 } __attribute__ ((packed));
+
+class CommandArgs
+{
+public:
+	const uint16_t mId;
+	const Color mColor;
+	const uint32_t mDelay;
+	const uint16_t mStep;
+
+	inline CommandArgs(uint16_t id, const Color& color, uint32_t delay, uint16_t step)	:mId(id), mColor(color), mDelay(delay), mStep(step)	{}
+};
 
 class QSYWiFiPacket
 {
@@ -51,6 +64,7 @@ public:
 public:
 
 	QSYWiFiPacket();
+	QSYWiFiPacket(const CommandArgs& args);
 	
 	bool isValid() const;
 

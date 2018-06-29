@@ -13,9 +13,21 @@ QSYWiFiPacket::QSYWiFiPacket()
 	mSignature[2] = 'Y';
 }
 
+QSYWiFiPacket::QSYWiFiPacket(const CommandArgs& args)
+{
+	mSignature[0] = 'Q';
+	mSignature[1] = 'S';
+	mSignature[2] = 'Y';
+	setType(PacketType::Command);
+	setId(args.mId);
+	setColor(args.mColor);
+	setDelay(args.mDelay);
+	setStep(args.mStep);
+}
+
 bool QSYWiFiPacket::isValid() const
 {
-	return mSignature[0] == 'Q' && mSignature[1] == 'S' && mSignature[2] == 'Y';
+	return mSignature[0] == 'Q' && mSignature[1] == 'S' && mSignature[2] == 'Y' && mType >= 0 && mType <= 3;
 }
 
 enum QSYWiFiPacket::PacketType QSYWiFiPacket::getType() const
